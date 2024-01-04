@@ -14,8 +14,9 @@ window.interactive = new Interactive("container", {
 interactive.style.overflow = 'visible';
 
 let xAxis = interactive.line(-interactive.width / 2, 0, interactive.width / 2, 0)
-let yAxis = interactive.line(0, interactive.height / 2, 0, -interactive.height / 2)
+let yAxis = interactive.line(0, -interactive.height / 2, 0, interactive.height / 2)
 
+// todo interesting bug: in -ve quadrants, arrow head inverts
 function arrowSvgPath(arrowTipX, arrowTipY) {
     let arrowHeadHeight = 10; // The arrow head is an isosceles triangle. This is the height of its normal.
     let arrowHeadOneSideWidth = arrowHeadHeight / 4; // We want the arrow head triangle to be half as wide as it's tall, so each side must be 1/4 the width.
@@ -51,31 +52,36 @@ function makeArrow(arrowTipX, arrowTipY, {colour} = {colour: 'green'}) {
 
 function makeVector(destinationX, destinationY, {name, coordinates} = {}) {
     // Construct a control point at the the location (100, 100)
-    window.control = interactive.control(destinationX, destinationY);
+    let point = interactive.control(destinationX, destinationY);
+    constrainPointToGrid(point);
 
     let arrow = makeArrow(destinationX, destinationY);
 
-    arrow.addDependency(control);
+    arrow.addDependency(point);
     arrow.update = function () {
-        let newArrowPath = arrowSvgPath(control.x, control.y);
+        let newArrowPath = arrowSvgPath(point.x, point.y);
         arrow.setAttribute('d', newArrowPath);
     }
 
     if (name || coordinates) {
         // let nameLabel = interactive.text(destinationX + 4, destinationY + 4, `<math display="block"><mi>${name}</mi></math>`);
-        let text = (coordinates && name) ? `${name} (${control.x}, ${control.y})`
-            : (coordinates ? `(${control.x}, ${control.y})` : `${name}`);
-        let label = interactive.text(control.x + 6, control.y - 6, text);
-        label.addDependency(control);
+        let text = (coordinates && name) ? `${name} (${point.x}, ${point.y})`
+            : (coordinates ? `(${point.x}, ${point.y})` : `${name}`);
+        let label = interactive.text(point.x + 6, point.y - 6, text);
+        label.addDependency(point);
         label.update = function () {
-            label.x = control.x + 6;
-            label.y = control.y - 6;
-            label.contents = (coordinates && name) ? `${name} (${control.x}, ${control.y})`
-                : (coordinates ? `(${control.x}, ${control.y})` : `${name}`);
+            label.x = point.x + 6;
+            label.y = point.y - 6;
+            label.contents = (coordinates && name) ? `${name} (${point.x}, ${point.y})`
+                : (coordinates ? `(${point.x}, ${point.y})` : `${name}`);
         }
     }
 
     return arrow;
+}
+
+function constrainPointToGrid(point) {
+    point.constrainWithinBox(xAxis.x1, yAxis.y1, xAxis.x2, yAxis.y2)
 }
 
 makeVector(100, 200, {name: 'P', coordinates: true})

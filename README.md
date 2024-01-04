@@ -10,3 +10,8 @@ todo:
 - invert grid y-direction
 - show grid lines
 - snap to grid lines
+
+
+Future:
+- rename `addDependency` to `anchorTo`
+- `addDependency` should take the update() function as a parameter, since update() is required. But maybe it's this way to allow having multiple sources of updates for the same update (?)
