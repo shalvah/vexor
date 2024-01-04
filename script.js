@@ -16,9 +16,9 @@ let xAxis = interactive.line(-interactive.width / 2, 0, interactive.width / 2, 0
 let yAxis = interactive.line(0, -interactive.height / 2, 0, interactive.height / 2)
 
 function makeArrow(arrowTipX, arrowTipY, {colour} = {colour: 'cornflowerblue'}) {
-    let arrowHead = interactive.marker(10, 5, 10, 10); // todo not sure exactly what these do
+    let arrowHead = interactive.marker(6, 3, 10, 10); // todo not sure exactly what these do
     arrowHead.style.fill = colour;
-    arrowHead.path('M 0 0 L 10 5 L 0 10 Z');
+    arrowHead.path('M 0 0 L 6 3 L 0 6 Z');
     arrowHead.setAttribute('orient', 'auto-start-reverse');
 
     let line = interactive.line(0, 0, arrowTipX, arrowTipY);
@@ -36,14 +36,24 @@ function makeVector(destinationX, destinationY, {name, coordinates} = {}) {
 
     let arrow = makeArrow(destinationX, destinationY);
 
+    // Make the vectors draggable by adding a control (hide the point)
+    let anchor = interactive.control(destinationX, destinationY);
+    anchor.point.style.display = 'none';
+    anchor.handle.style.cursor = 'pointer';
+    arrow.addDependency(anchor);
+    arrow.update = function () {
+        arrow.x2 = anchor.x
+        arrow.y2 = anchor.y
+    }
+
     if (name || coordinates) {
         // let nameLabel = interactive.text(destinationX + 4, destinationY + 4, `<math display="block"><mi>${name}</mi></math>`);
-        let label = makeReactiveElement('text', () => ({
-                x: arrow.x2 + 6,
-                y: arrow.y2 - 6,
-                contents: (coordinates && name) ? `${name} (${arrow.x2}, ${arrow.y2})`
-                    : (coordinates ? `(${arrow.x2}, ${arrow.y2})` : `${name}`),
-            }), [arrow]);
+        let label = makeReactiveElement('text', function () {
+            this.x = arrow.x2 < 0 ? arrow.x2 - 6 : arrow.x2 + 6;
+            this.y = arrow.y2 < 0 ? arrow.y2 - 6 : arrow.y2 + 6;
+            this.contents = (coordinates && name) ? `${name} (${arrow.x2}, ${arrow.y2})`
+                : (coordinates ? `(${arrow.x2}, ${arrow.y2})` : `${name}`);
+        }, [anchor]);
     }
 
     return arrow;
@@ -53,15 +63,10 @@ function constrainPointToGrid(point) {
     point.constrainWithinBox(xAxis.x1, yAxis.y1, xAxis.x2, yAxis.y2)
 }
 
-function makeReactiveElement(kind, newStateFunction, dependencies) {
+function makeReactiveElement(kind, updaterFunction, dependencies) {
     let element = interactive[kind](0, 0, 0, 0, 0, 0);
     element.addDependency(...dependencies);
-    element.update = function () {
-        let newAttributes = newStateFunction();
-        Object.entries(newAttributes).forEach(([k, v]) => {
-            element[k] = v;
-        });
-    };
+    element.update = updaterFunction;
     element.update();
     return element;
 }
