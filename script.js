@@ -39,11 +39,14 @@ function arrowSvgPath(arrowTipX, arrowTipY) {
     return `M 0 0 L ${arrowHeadX} ${arrowHeadY} L ${arrowHeadLeftX} ${arrowHeadLeftY} L ${arrowTipX} ${arrowTipY} L ${arrowHeadRightX} ${arrowHeadRightY} L ${arrowHeadX} ${arrowHeadY}`;
 }
 
-function makeArrow(arrowTipX, arrowTipY, {colour} = {colour: 'green'}) {
-    let arrowPath = arrowSvgPath(arrowTipX, arrowTipY);
+function makeArrow(arrowTipX, arrowTipY, {colour} = {colour: 'cornflowerblue'}) {
+    let arrowHead = interactive.marker(10, 5, 10, 10); // todo not sure exactly what these do
+    arrowHead.style.fill = colour;
+    arrowHead.path('M 0 0 L 10 5 L 0 10 Z');
+    arrowHead.setAttribute('orient', 'auto-start-reverse');
 
-    let line = interactive.path(arrowPath);
-    line.style.fill = colour;
+    let line = interactive.line(0, 0, arrowTipX, arrowTipY);
+    line.setAttribute('marker-end', `url(#${arrowHead.id})`)
     line.style.strokeWidth = '2px';
     line.style.stroke = colour;
 
@@ -52,28 +55,28 @@ function makeArrow(arrowTipX, arrowTipY, {colour} = {colour: 'green'}) {
 
 function makeVector(destinationX, destinationY, {name, coordinates} = {}) {
     // Construct a control point at the the location (100, 100)
-    let point = interactive.control(destinationX, destinationY);
-    constrainPointToGrid(point);
+   // let point = interactive.control(destinationX, destinationY);
+   // constrainPointToGrid(point);
 
     let arrow = makeArrow(destinationX, destinationY);
 
-    arrow.addDependency(point);
+/*    arrow.addDependency(point);
     arrow.update = function () {
         let newArrowPath = arrowSvgPath(point.x, point.y);
         arrow.setAttribute('d', newArrowPath);
     }
-
+*/
     if (name || coordinates) {
         // let nameLabel = interactive.text(destinationX + 4, destinationY + 4, `<math display="block"><mi>${name}</mi></math>`);
-        let text = (coordinates && name) ? `${name} (${point.x}, ${point.y})`
-            : (coordinates ? `(${point.x}, ${point.y})` : `${name}`);
-        let label = interactive.text(point.x + 6, point.y - 6, text);
-        label.addDependency(point);
+        let text = (coordinates && name) ? `${name} (${arrow.x2}, ${arrow.y2})`
+            : (coordinates ? `(${arrow.x2}, ${arrow.y2})` : `${name}`);
+        let label = interactive.text(arrow.x2 + 6, arrow.y2 - 6, text);
+        label.addDependency(arrow);
         label.update = function () {
-            label.x = point.x + 6;
-            label.y = point.y - 6;
-            label.contents = (coordinates && name) ? `${name} (${point.x}, ${point.y})`
-                : (coordinates ? `(${point.x}, ${point.y})` : `${name}`);
+            label.x = arrow.x2 + 6;
+            label.y = arrow.y2 - 6;
+            label.contents = (coordinates && name) ? `${name} (${arrow.x2}, ${arrow.y2})`
+                : (coordinates ? `(${arrow.x2}, ${arrow.y2})` : `${name}`);
         }
     }
 

@@ -5,6 +5,8 @@ Thus far:
 - grid has origin in center
 
 todo:
+- wrapper for update and create (reactivity)
+- make vector resizable (again) with marker, just like with control
 - show points on the axes
 - label the axes
 - invert grid y-direction
