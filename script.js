@@ -14,12 +14,22 @@ interactive.style.overflow = 'visible';
 
 let xAxis = interactive.line(-interactive.width / 2, 0, interactive.width / 2, 0)
 let yAxis = interactive.line(0, -interactive.height / 2, 0, interactive.height / 2)
+let arrowHead = makeArrowHead();
+[xAxis, yAxis].forEach(el => {
+    el.setAttribute('marker-end', `url(#${arrowHead.id})`);
+    el.setAttribute('marker-start', `url(#${arrowHead.id})`);
+})
 
-function makeArrow(arrowTipX, arrowTipY, {colour} = {colour: 'cornflowerblue'}) {
+function makeArrowHead(colour = 'black') {
     let arrowHead = interactive.marker(6, 3, 10, 10); // todo not sure exactly what these do
     arrowHead.style.fill = colour;
     arrowHead.path('M 0 0 L 6 3 L 0 6 Z');
     arrowHead.setAttribute('orient', 'auto-start-reverse');
+    return arrowHead;
+}
+
+function makeArrow(arrowTipX, arrowTipY, {colour} = {colour: 'cornflowerblue'}) {
+    let arrowHead = makeArrowHead(colour);
 
     let line = interactive.line(0, 0, arrowTipX, arrowTipY);
     line.setAttribute('marker-end', `url(#${arrowHead.id})`)

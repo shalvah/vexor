@@ -3,9 +3,9 @@ Thus far:
 - `makeVector`: draw a resizable vector using `makeArrow`, with name and coordinates shown
 - grid shows y and x-axes lines
 - grid has origin in center
+- wrapper for update and create (reactivity)
 
 todo:
-- wrapper for update and create (reactivity)
 - make vector resizable (again) with marker, just like with control
 - show points on the axes
 - label the axes
