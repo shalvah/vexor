@@ -2,8 +2,9 @@ import Svg from "./svg.mjs";
 
 class Grid extends Svg {
   static AXIS_MARGIN = 32; // Gap between axes and screen edges (useful to insert number labels and axes labels)
-  static GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS = 10; // Gap between number labels and axis
-  static GAP_FROM_AXIS_LABEL_TOP_TO_AXIS = 20; // Gap between number labels and axis
+  static GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS = 8; // Gap between number labels and x-axis
+  static GAP_FROM_AXIS_LABEL_TOP_TO_AXIS = 20; // Gap between number labels and x-axis
+  static GAP_FROM_AXIS_LABEL_END_TO_AXIS = 5; // Gap between number labels and y-axis
 
   constructor(domElementId, {maxX, maxY, minX, minY}, options = {}) {
     minX = minX ?? -maxX;
@@ -84,10 +85,10 @@ class Grid extends Svg {
         horizontalGridLines.line(this.maxX, y_i, this.minX, y_i);
         // If there's no negative quadrant, we put the y-labels directly to the left of the y-axis
         if (!this.hasNegativeQuadrant()) {
-          horizontalGridLineLabels.text(-Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS, y_i, y_i);
+          horizontalGridLineLabels.text(-Grid.GAP_FROM_AXIS_LABEL_END_TO_AXIS, y_i, y_i);
         } else {
           // If there's a negative quadrant, we put the y-labels all the way to the left.
-          horizontalGridLineLabels.text(this.minX - Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS, y_i, y_i);
+          horizontalGridLineLabels.text(this.minX - Grid.GAP_FROM_AXIS_LABEL_END_TO_AXIS, y_i, y_i);
         }
       }
     }
