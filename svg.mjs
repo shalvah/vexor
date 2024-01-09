@@ -60,6 +60,10 @@ class Svg {
         return this.add(`path`, {d, ...otherAttributes}, styles);
     }
 
+    group(styles = {}, otherAttributes = {}) {
+        return this.add(`g`, otherAttributes, styles);
+    }
+
     setAttribute(attribute, value) {
         return this.$element.setAttribute(attribute, value);
     }

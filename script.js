@@ -46,47 +46,49 @@ class Grid extends Svg {
   }
 
   drawGridLines() {
+    let verticalGridLines = this.group({
+      stroke: 'black',
+      strokeWidth: '1px',
+      strokeOpacity: '.2',
+    });
+    let verticalGridLineLabels = this.group({
+      textAnchor: 'middle',
+      alignmentBaseline: 'bottom',
+      fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
+    });
     for (let x_i = this.minX; x_i <= this.maxX; x_i += 50) {
       if (x_i !== 0) {
-        let verticalGridLine = this.#gridLine(x_i, this.minY, x_i, this.maxY, {});
+        verticalGridLines.line(x_i, this.minY, x_i, this.maxY);
         if (!this.hasNegativeQuadrant()) {
           // If there's no negative quadrant, we put the x-labels directly above the x-axis
-          let label = this.text(x_i, -Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS, x_i, {
-            textAnchor: 'middle',
-            alignmentBaseline: 'bottom',
-            fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
-          });
+          verticalGridLineLabels.text(x_i, -Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS, x_i);
         } else {
           // If there's a negative quadrant, we put the x-labels at the bottom of the grid
-          let label = this.text(x_i, this.maxY + Grid.GAP_FROM_AXIS_LABEL_TOP_TO_AXIS, x_i, {
-            textAnchor: 'middle',
-            fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
-            // alignment-baseline is ignored here, maybe because our positioning only depends on the gap from top
-          });
+          verticalGridLineLabels.text(x_i, this.maxY + Grid.GAP_FROM_AXIS_LABEL_TOP_TO_AXIS, x_i);
         }
-        // let label = this.foreignObject(x_i, 0,
-        //   `<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>${x_i}</mi></mrow></math>`,
-        //   {}, {width: 40, height: 20});
       }
     }
 
+    let horizontalGridLines = this.group({
+      stroke: 'black',
+      strokeWidth: '1px',
+      strokeOpacity: '.2',
+    });
+    let horizontalGridLineLabels = this.group({
+      textAnchor: 'end',
+      alignmentBaseline: 'middle',
+      fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
+    });
+
     for (let y_i = this.minY; y_i <= this.maxY; y_i += 50) {
       if (y_i !== 0) {
-        let horizontalGridLine = this.#gridLine(this.maxX, y_i, this.minX, y_i);
+        horizontalGridLines.line(this.maxX, y_i, this.minX, y_i);
         // If there's no negative quadrant, we put the y-labels directly to the left of the y-axis
         if (!this.hasNegativeQuadrant()) {
-          let label = this.text(-Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS, y_i, y_i, {
-            textAnchor: 'end',
-            alignmentBaseline: 'middle',
-            fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
-          });
+          horizontalGridLineLabels.text(-Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS, y_i, y_i);
         } else {
           // If there's a negative quadrant, we put the y-labels all the way to the left.
-          let label = this.text(this.minX - Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS, y_i, y_i, {
-            textAnchor: 'end',
-            alignmentBaseline: 'middle',
-            fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
-          });
+          horizontalGridLineLabels.text(this.minX - Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS, y_i, y_i);
         }
       }
     }
@@ -106,13 +108,6 @@ class Grid extends Svg {
       otherAttributes[`marker-end`] = `url(#${arrowHead.getAttribute('id')})`;
     }
     return this.line(x1, y1, x2, y2, styles, otherAttributes);
-  }
-
-  #gridLine(x1, y1, x2, y2, styles = {}, otherAttributes = {}) {
-    styles.stroke = 'black';
-    styles.strokeWidth = '1px';
-    styles.strokeOpacity = '.2';
-    return super.line(x1, y1, x2, y2, styles, otherAttributes);
   }
 
   hasPositiveQuadrant() {
@@ -136,19 +131,9 @@ class Grid extends Svg {
 
 let root = new Grid(`container`, {
   maxX: 300, maxY: 300,
- // minX: 0, minY: 0
+  minX: 0, minY: 0
 });
-root.add(`path`,
-  {d: `M 50,50 L 200,200`},
-  {strokeWidth: `2px`, stroke: `green`}
-);
-root.add(`circle`,
-  {cx: `150`, cy: `100`, r: `50`},
-  {strokeWidth: `2px`, stroke: `cornflowerblue`, fill: 'none'}
-)
 
-root.marker(6, 3, 10, 10, {fill: 'green'}, {orient: 'auto-start-reverse'})
-  .path('M 0 0 L 6 3 L 0 6 Z');
 
 
 /*
