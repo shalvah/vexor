@@ -40,10 +40,16 @@ class Svg {
         return this.add(`line`, {x1, y1, x2, y2, ...otherAttributes}, styles);
     }
 
-    text(x, y, text, styles = {}, otherAttributes = {}) {
-        const $text = this.add(`text`, {x, y, ...otherAttributes}, styles);
-        $text.innerHTML = text;
-        return $text;
+    text(x, y, content, styles = {}, otherAttributes = {}) {
+        const text = this.add(`text`, {x, y, ...otherAttributes}, styles);
+        text.$element.innerHTML = content;
+        return text;
+    }
+
+    foreignObject(x, y, content, styles = {}, otherAttributes = {}) {
+        const foreignObject = this.add(`foreignObject`, {x, y, ...otherAttributes}, styles);
+        foreignObject.$element.innerHTML = content;
+        return foreignObject;
     }
 
     marker(refX, refY, markerWidth, markerHeight, styles = {}, otherAttributes = {}) {

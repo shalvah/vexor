@@ -1,7 +1,9 @@
 import Svg from "./svg.mjs";
 
 class Grid extends Svg {
-  static AXIS_MARGIN = 32; // We add a small margin so we can insert number and axes labels
+  static AXIS_MARGIN = 32; // Gap between axes and screen edges (useful to insert number labels and axes labels)
+  static GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS = 10; // Gap between number labels and axis
+  static GAP_FROM_AXIS_LABEL_TOP_TO_AXIS = 20; // Gap between number labels and axis
 
   constructor(domElementId, {maxX, maxY, minX, minY}, options = {}) {
     minX = minX ?? -maxX;
@@ -32,26 +34,60 @@ class Grid extends Svg {
   setUpAxes() {
     this.xAxis = this.#axis(this.minX - Grid.AXIS_MARGIN, 0, this.maxX + Grid.AXIS_MARGIN, 0);
     this.yAxis = this.#axis(0, this.minY - Grid.AXIS_MARGIN, 0, this.maxY + Grid.AXIS_MARGIN);
+
+    this.text(this.xAxis.getAttribute('x2'), Grid.AXIS_MARGIN / 2, 'x', {
+      textAnchor: 'end',
+      fontStyle: 'italic',
+    });
+    this.text(Grid.AXIS_MARGIN / 2, this.yAxis.getAttribute('y2'), 'y', {
+      textAnchor: 'end',
+      fontStyle: 'italic',
+    });
   }
 
   drawGridLines() {
     for (let x_i = this.minX; x_i <= this.maxX; x_i += 50) {
       if (x_i !== 0) {
         let verticalGridLine = this.#gridLine(x_i, this.minY, x_i, this.maxY, {});
-        let label = this.text(x_i, 0, x_i, {
-          textAnchor: 'middle',
-          alignmentBaseline: 'hanging',
-        });
+        if (!this.hasNegativeQuadrant()) {
+          // If there's no negative quadrant, we put the x-labels directly above the x-axis
+          let label = this.text(x_i, -Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS, x_i, {
+            textAnchor: 'middle',
+            alignmentBaseline: 'bottom',
+            fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
+          });
+        } else {
+          // If there's a negative quadrant, we put the x-labels at the bottom of the grid
+          let label = this.text(x_i, this.maxY + Grid.GAP_FROM_AXIS_LABEL_TOP_TO_AXIS, x_i, {
+            textAnchor: 'middle',
+            fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
+            // alignment-baseline is ignored here, maybe because our positioning only depends on the gap from top
+          });
+        }
+        // let label = this.foreignObject(x_i, 0,
+        //   `<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>${x_i}</mi></mrow></math>`,
+        //   {}, {width: 40, height: 20});
       }
     }
 
     for (let y_i = this.minY; y_i <= this.maxY; y_i += 50) {
       if (y_i !== 0) {
         let horizontalGridLine = this.#gridLine(this.maxX, y_i, this.minX, y_i);
-        let label = this.text(0, y_i, y_i, {
-          textAnchor: 'end',
-          alignmentBaseline: 'hanging',
-        });
+        // If there's no negative quadrant, we put the y-labels directly to the left of the y-axis
+        if (!this.hasNegativeQuadrant()) {
+          let label = this.text(-Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS, y_i, y_i, {
+            textAnchor: 'end',
+            alignmentBaseline: 'middle',
+            fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
+          });
+        } else {
+          // If there's a negative quadrant, we put the y-labels all the way to the left.
+          let label = this.text(this.minX - Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS, y_i, y_i, {
+            textAnchor: 'end',
+            alignmentBaseline: 'middle',
+            fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
+          });
+        }
       }
     }
   }
@@ -63,10 +99,10 @@ class Grid extends Svg {
       stroke: 'black',
       strokeWidth: '2px',
     }
-    if (x1 < -Grid.AXIS_MARGIN || y1 < -Grid.AXIS_MARGIN) {
+    if (this.hasNegativeQuadrant()) {
       otherAttributes[`marker-start`] = `url(#${arrowHead.getAttribute('id')})`;
     }
-    if (x2 > 0 || y2 > 0) {
+    if (this.hasPositiveQuadrant()) {
       otherAttributes[`marker-end`] = `url(#${arrowHead.getAttribute('id')})`;
     }
     return this.line(x1, y1, x2, y2, styles, otherAttributes);
@@ -79,18 +115,29 @@ class Grid extends Svg {
     return super.line(x1, y1, x2, y2, styles, otherAttributes);
   }
 
+  hasPositiveQuadrant() {
+    return this.maxX > 0 || this.maxY > 0;
+  }
+
+  hasNegativeQuadrant() {
+    return this.minX < 0 || this.minY < 0;
+  }
+
   #fetchArrowHead() {
     return this._arrowHead || (this._arrowHead = this.makeArrowHead());
   }
 
-  makeArrowHead(colour = 'black') {
-    let arrowHead = this.marker(6, 3, 10, 10, {fill: colour}, {id: 'arrowhead', orient: 'auto-start-reverse'});
+  makeArrowHead() {
+    let arrowHead = this.marker(6, 3, 10, 10, {fill: 'currentColor'}, {id: 'arrowhead', orient: 'auto-start-reverse'});
     arrowHead.path('M 0 0 L 6 3 L 0 6 Z');
     return arrowHead;
   }
 }
 
-let root = new Grid(`container`, {maxX: 300, maxY: 300, minX: 0, minY: 0});
+let root = new Grid(`container`, {
+  maxX: 300, maxY: 300,
+ // minX: 0, minY: 0
+});
 root.add(`path`,
   {d: `M 50,50 L 200,200`},
   {strokeWidth: `2px`, stroke: `green`}
@@ -104,37 +151,8 @@ root.marker(6, 3, 10, 10, {fill: 'green'}, {orient: 'auto-start-reverse'})
   .path('M 0 0 L 6 3 L 0 6 Z');
 
 
-import Interactive from "https://vectorjs.org/interactive.js";
-
-
 /*
 
-
-import Grid from "./svg.mjs";
-
-// Construct an interactive within the HTML element with the id "my-interactive"
-let gridWidth = 700;
-let gridHeight = 500;
-let grid = Grid.make("container", {
-    width: gridWidth,
-    height: gridHeight,
-    border: true,
-    originX: gridWidth / 2,
-    originY: gridHeight / 2,
-});
-
-window.interactive = grid.interactive;
-
-function makeArrow(arrowTipX, arrowTipY, {colour} = {colour: 'cornflowerblue'}) {
-    let arrowHead = grid.makeArrowHead(colour);
-
-    let line = interactive.line(0, 0, arrowTipX, arrowTipY);
-    line.setAttribute('marker-end', `url(#${arrowHead.id})`)
-    line.style.strokeWidth = '2px';
-    line.style.stroke = colour;
-
-    return line;
-}
 
 function makeVector(destinationX, destinationY, {name, coordinates} = {}) {
     // Construct a control point at the the location (100, 100)
