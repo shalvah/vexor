@@ -20,8 +20,9 @@ class Grid extends Svg {
     // and viewBox of 0,0,600,600, a point with coordinates (300,300)
     // will be at half the width of the SVG.
     options.viewBox = `${minX - Grid.AXIS_MARGIN},${minY - Grid.AXIS_MARGIN} ${options.width},${options.height}`;
+    let styles = {overflow: 'visible', fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',};
 
-    super(`svg`, domElementId, options, {overflow: 'visible'});
+    super(`svg`, domElementId, options, styles);
     this.maxX = maxX;
     this.maxY = maxY;
     this.minX = minX;
@@ -54,7 +55,6 @@ class Grid extends Svg {
     let verticalGridLineLabels = this.group({
       textAnchor: 'middle',
       alignmentBaseline: 'bottom',
-      fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
     });
     for (let x_i = this.minX; x_i <= this.maxX; x_i += 50) {
       if (x_i !== 0) {
@@ -77,7 +77,6 @@ class Grid extends Svg {
     let horizontalGridLineLabels = this.group({
       textAnchor: 'end',
       alignmentBaseline: 'middle',
-      fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
     });
 
     for (let y_i = this.minY; y_i <= this.maxY; y_i += 50) {
@@ -133,8 +132,6 @@ let root = new Grid(`container`, {
   maxX: 300, maxY: 300,
   minX: 0, minY: 0
 });
-
-
 
 /*
 

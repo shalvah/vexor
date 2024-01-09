@@ -71,6 +71,11 @@ class Svg {
     getAttribute(attribute) {
         return this.$element.getAttribute(attribute);
     }
+
+    // Shortcut to get coordinate
+    get(attribute) {
+        return Number(this.$element.getAttribute(attribute));
+    }
 }
 
 export default Svg;
