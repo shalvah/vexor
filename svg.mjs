@@ -36,24 +36,24 @@ class Svg {
         return new Svg(elementType, this.$element, attributes, styles);
     }
 
-    line(x1, y1, x2, y2, styles = {}, otherAttributes = {}) {
-        return this.add(`line`, {x1, y1, x2, y2, ...otherAttributes}, styles);
+    line(start, end, styles = {}, otherAttributes = {}) {
+        return this.add(`line`, {x1: start.x, y1: start.y, x2: end.x, y2: end.y, ...otherAttributes}, styles);
     }
 
-    text(x, y, content, styles = {}, otherAttributes = {}) {
-        const text = this.add(`text`, {x, y, ...otherAttributes}, styles);
+    text(position, content, styles = {}, otherAttributes = {}) {
+        const text = this.add(`text`, {x: position.x, y: position.y, ...otherAttributes}, styles);
         text.$element.innerHTML = content;
         return text;
     }
 
-    foreignObject(x, y, content, styles = {}, otherAttributes = {}) {
-        const foreignObject = this.add(`foreignObject`, {x, y, ...otherAttributes}, styles);
+    foreignObject(position, content, styles = {}, otherAttributes = {}) {
+        const foreignObject = this.add(`foreignObject`, {x: position.x, y: position.y, ...otherAttributes}, styles);
         foreignObject.$element.innerHTML = content;
         return foreignObject;
     }
 
-    marker(refX, refY, markerWidth, markerHeight, styles = {}, otherAttributes = {}) {
-        return this.add(`marker`, {refX, refY, markerWidth, markerHeight, ...otherAttributes}, styles);
+    marker({ width, height }, styles = {}, otherAttributes = {}) {
+        return this.add(`marker`, {markerWidth: width, markerHeight: height, ...otherAttributes}, styles);
     }
 
     path(d, styles = {}, otherAttributes = {}) {
