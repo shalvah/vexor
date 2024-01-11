@@ -4,11 +4,11 @@ let root = new Grid(`container`, {
   maxX: 300, maxY: 300,
   minX: 0, minY: 0
 });
-root.add(`path`,
+root.path(
   {d: `M 50,50 L 200,200`},
   {strokeWidth: `2px`, stroke: `green`}
 );
-root.add(`circle`,
+root.circle(
   {cx: `150`, cy: `100`, r: `50`},
   {strokeWidth: `2px`, stroke: `red`, fill: 'none'}
 )

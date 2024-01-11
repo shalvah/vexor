@@ -38,85 +38,103 @@ class Grid extends Svg {
   setUpAxes() {
     this.arrowHead = this.makeArrowHead();
     this.xAxis = this.#axis(
-      {x: this.minX - Grid.AXIS_MARGIN, y: 0}, {x: this.maxX + Grid.AXIS_MARGIN, y: 0},
-      {id: `x-axis-grid-${this.gridId}`}
+      {
+        x1: this.minX - Grid.AXIS_MARGIN,
+        y1: 0,
+        x2: this.maxX + Grid.AXIS_MARGIN,
+        y2: 0,
+        id: `x-axis-grid-${this.gridId}`,
+      }
     );
     this.yAxis = this.#axis(
-      {x: 0, y: this.minY - Grid.AXIS_MARGIN}, {x: 0, y: this.maxY + Grid.AXIS_MARGIN},
-      {id: `y-axis-grid-${this.gridId}`}
+      {
+        x1: 0,
+        y1: this.minY - Grid.AXIS_MARGIN,
+        x2: 0,
+        y2: this.maxY + Grid.AXIS_MARGIN,
+        id: `y-axis-grid-${this.gridId}`,
+      }
     );
 
-    this.text({x: this.xAxis.getAttribute('x2'), y: Grid.AXIS_MARGIN / 2}, 'x', {
-      textAnchor: 'end',
-      fontStyle: 'italic',
-      fontFamily: 'Times New Roman',
-    });
-    this.text({x: Grid.AXIS_MARGIN / 2, y: this.yAxis.getAttribute('y2')}, 'y', {
-      textAnchor: 'end',
-      fontStyle: 'italic',
-      fontFamily: 'Times New Roman',
-    });
+    this.text('x',
+      {
+        x: this.xAxis.getAttribute('x2'), y: Grid.AXIS_MARGIN / 2
+      },
+      {
+        textAnchor: 'end',
+        fontStyle: 'italic',
+        fontFamily: 'Times New Roman',
+      });
+    this.text('y',
+      {
+        x: Grid.AXIS_MARGIN / 2, y: this.yAxis.getAttribute('y2')
+      },
+      {
+        textAnchor: 'end',
+        fontStyle: 'italic',
+        fontFamily: 'Times New Roman',
+      });
   }
 
   drawGridLines() {
-    let verticalGridLines = this.group({
+    let verticalGridLines = this.grouped({
       stroke: 'black',
       strokeWidth: '1px',
       strokeOpacity: '.2',
     });
-    let verticalGridLineLabels = this.group({
+    let verticalGridLineLabels = this.grouped({
       textAnchor: 'middle',
       alignmentBaseline: 'bottom',
     });
     for (let x_i = this.minX; x_i <= this.maxX; x_i += 50) {
       if (x_i !== 0) {
-        verticalGridLines.line({x: x_i, y: this.minY}, {x: x_i, y: this.maxY});
+        verticalGridLines.line({x1: x_i, y1: this.minY, x2: x_i, y2: this.maxY});
         if (!this.hasNegativeQuadrant()) {
           // If there's no negative quadrant, we put the x-labels directly above the x-axis
-          verticalGridLineLabels.text({x: x_i, y: -Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS}, x_i);
+          verticalGridLineLabels.text(`${x_i}`, {x: x_i, y: -Grid.GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS});
         } else {
           // If there's a negative quadrant, we put the x-labels at the bottom of the grid
-          verticalGridLineLabels.text({x: x_i, y: this.maxY + Grid.GAP_FROM_AXIS_LABEL_TOP_TO_AXIS}, x_i);
+          verticalGridLineLabels.text(`${x_i}`, {x: x_i, y: this.maxY + Grid.GAP_FROM_AXIS_LABEL_TOP_TO_AXIS});
         }
       }
     }
 
-    let horizontalGridLines = this.group({
+    let horizontalGridLines = this.grouped({
       stroke: 'black',
       strokeWidth: '1px',
       strokeOpacity: '.2',
     });
-    let horizontalGridLineLabels = this.group({
+    let horizontalGridLineLabels = this.grouped({
       textAnchor: 'end',
       alignmentBaseline: 'middle',
     });
 
     for (let y_i = this.minY; y_i <= this.maxY; y_i += 50) {
       if (y_i !== 0) {
-        horizontalGridLines.line({x: this.maxX, y: y_i}, {x: this.minX, y: y_i});
+        horizontalGridLines.line({x1: this.maxX, y1: y_i, x2: this.minX, y2: y_i});
         // If there's no negative quadrant, we put the y-labels directly to the left of the y-axis
         if (!this.hasNegativeQuadrant()) {
-          horizontalGridLineLabels.text({x: -Grid.GAP_FROM_AXIS_LABEL_END_TO_AXIS, y: y_i}, y_i);
+          horizontalGridLineLabels.text(`${y_i}`, {x: -Grid.GAP_FROM_AXIS_LABEL_END_TO_AXIS, y: y_i});
         } else {
           // If there's a negative quadrant, we put the y-labels all the way to the left.
-          horizontalGridLineLabels.text({x: this.minX - Grid.GAP_FROM_AXIS_LABEL_END_TO_AXIS, y: y_i}, y_i);
+          horizontalGridLineLabels.text(`${y_i}`, {x: this.minX - Grid.GAP_FROM_AXIS_LABEL_END_TO_AXIS, y: y_i});
         }
       }
     }
   }
 
-  #axis(start, end, otherAttributes = {}) {
+  #axis(attributes = {}) {
     let styles = {
       stroke: 'black',
       strokeWidth: '2px',
     }
     if (this.hasNegativeQuadrant()) {
-      otherAttributes[`marker-start`] = `url(#${this.arrowHead.getAttribute('id')})`;
+      attributes[`marker-start`] = `url(#${this.arrowHead.getAttribute('id')})`;
     }
     if (this.hasPositiveQuadrant()) {
-      otherAttributes[`marker-end`] = `url(#${this.arrowHead.getAttribute('id')})`;
+      attributes[`marker-end`] = `url(#${this.arrowHead.getAttribute('id')})`;
     }
-    return this.line(start, end, styles, otherAttributes);
+    return this.line(attributes, styles);
   }
 
   hasPositiveQuadrant() {
@@ -133,7 +151,7 @@ class Grid extends Svg {
       // 0,0 of the arrowhead is the end of the axis, so we must "translate" it
       refX: 6, refY: 3
     });
-    arrowHead.path('M 0,0 L 6,3 L 0,6 Z');
+    arrowHead.path({d: 'M 0,0 L 6,3 L 0,6 Z'});
     return arrowHead;
   }
 }

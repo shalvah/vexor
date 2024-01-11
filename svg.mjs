@@ -36,18 +36,22 @@ class Svg {
         return new Svg(elementType, this.$element, attributes, styles);
     }
 
-    line(start, end, styles = {}, otherAttributes = {}) {
-        return this.add(`line`, {x1: start.x, y1: start.y, x2: end.x, y2: end.y, ...otherAttributes}, styles);
+    line(attributes, styles = {}) {
+        return this.add(`line`, attributes, styles);
     }
 
-    text(position, content, styles = {}, otherAttributes = {}) {
-        const text = this.add(`text`, {x: position.x, y: position.y, ...otherAttributes}, styles);
+    circle(attributes, styles = {}) {
+        return this.add(`circle`, attributes, styles);
+    }
+
+    text(content, attributes, styles = {}, otherAttributes = {}) {
+        const text = this.add(`text`, attributes, styles);
         text.$element.innerHTML = content;
         return text;
     }
 
-    foreignObject(position, content, styles = {}, otherAttributes = {}) {
-        const foreignObject = this.add(`foreignObject`, {x: position.x, y: position.y, ...otherAttributes}, styles);
+    foreignObject(content, attributes = {}, styles = {}) {
+        const foreignObject = this.add(`foreignObject`, attributes, styles);
         foreignObject.$element.innerHTML = content;
         return foreignObject;
     }
@@ -56,12 +60,12 @@ class Svg {
         return this.add(`marker`, {markerWidth: width, markerHeight: height, ...otherAttributes}, styles);
     }
 
-    path(d, styles = {}, otherAttributes = {}) {
-        return this.add(`path`, {d, ...otherAttributes}, styles);
+    path(attributes, styles = {}) {
+        return this.add(`path`, attributes, styles);
     }
 
-    group(styles = {}, otherAttributes = {}) {
-        return this.add(`g`, otherAttributes, styles);
+    grouped(styles = {}) {
+        return this.add(`g`, {}, styles);
     }
 
     setAttribute(attribute, value) {
