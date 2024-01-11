@@ -44,7 +44,7 @@ class Svg {
         return this.add(`circle`, attributes, styles);
     }
 
-    text(content, attributes, styles = {}, otherAttributes = {}) {
+    text(content, attributes, styles = {}) {
         const text = this.add(`text`, attributes, styles);
         text.$element.innerHTML = content;
         return text;
@@ -56,8 +56,8 @@ class Svg {
         return foreignObject;
     }
 
-    marker({ width, height }, styles = {}, otherAttributes = {}) {
-        return this.add(`marker`, {markerWidth: width, markerHeight: height, ...otherAttributes}, styles);
+    marker(attributes, styles = {}) {
+        return this.add(`marker`, attributes, styles);
     }
 
     path(attributes, styles = {}) {

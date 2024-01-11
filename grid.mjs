@@ -146,8 +146,11 @@ class Grid extends Svg {
   }
 
   makeArrowHead() {
-    let arrowHead = this.marker({width: 10, height: 10}, {}, {
-      id: `axis-arrowhead-grid-${this.gridId}`, orient: 'auto-start-reverse',
+    let arrowHead = this.marker({
+      markerWidth: 10,
+      markerHeight: 10,
+      id: `axis-arrowhead-grid-${this.gridId}`,
+      orient: 'auto-start-reverse',
       // 0,0 of the arrowhead is the end of the axis, so we must "translate" it
       refX: 6, refY: 3
     });
