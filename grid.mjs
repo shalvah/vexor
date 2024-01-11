@@ -147,12 +147,12 @@ class Grid extends Svg {
 
   makeArrowHead() {
     let arrowHead = this.marker({
-      markerWidth: 10,
-      markerHeight: 10,
+      markerWidth: 6,
+      markerHeight: 6,
       id: `axis-arrowhead-grid-${this.gridId}`,
       orient: 'auto-start-reverse',
       // 0,0 of the arrowhead is the end of the axis, so we must "translate" it
-      refX: 6, refY: 3
+      refX: 5, refY: 3
     });
     arrowHead.path({d: 'M 0,0 L 6,3 L 0,6 Z'});
     return arrowHead;
