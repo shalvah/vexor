@@ -7,10 +7,8 @@ Thus far:
 
 todo:
 - make vector resizable (again) with marker, just like with control
-- show points on the axes
-- label the axes
+- constrain vector to grid
 - invert grid y-direction
-- show grid lines
 - snap to grid lines
 
 
