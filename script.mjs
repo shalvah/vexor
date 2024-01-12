@@ -12,6 +12,17 @@ root.circle(
   {cx: `150`, cy: `100`, r: `50`},
   {strokeWidth: `2px`, stroke: `red`, fill: 'none'}
 )
+root.draggableLine(
+  {x1: `150`, y1: `100`, x2: `50`, y2: `140`},
+  {strokeWidth: `2px`, stroke: `blue`, fill: 'none'}
+)
+
+// Motivation
+// Demonstrating vector db article
+// School work
+// Inspirations:
+// https://vectorjs.org/
+// https://www.petercollingridge.co.uk/tools/interactivesvgjs/
 
 /*
 
