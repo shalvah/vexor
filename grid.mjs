@@ -21,7 +21,11 @@ class Grid extends Svg {
     // and viewBox of 0,0,600,600, a point with coordinates (300,300)
     // will be at half the width of the SVG.
     options.viewBox = `${minX - Grid.AXIS_MARGIN},${minY - Grid.AXIS_MARGIN} ${options.width},${options.height}`;
-    let styles = {overflow: 'visible', fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',};
+    let styles = {
+      overflow: 'visible',
+      userSelect: 'none',
+      fontFamily: 'math, Verdana, Arial, Helvetica, sans-serif',
+    };
 
     super(`svg`, domElementId, options, styles);
     this.maxX = maxX;

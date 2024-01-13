@@ -49,7 +49,7 @@ class Svg extends EventTarget {
         });
     }
 
-    updateAttributes(attributes) {
+    updateAndNotify(attributes) {
         setAttributes(this, attributes);
         this.dispatchEvent(new CustomEvent("attributes_changed", {
             detail: attributes
@@ -63,8 +63,6 @@ class Svg extends EventTarget {
           {x: attributes.x1, y: attributes.y1},
           {x: attributes.x2, y: attributes.y2},
         ];
-
-        let isDragging = false
 
         function computePointPosition(pointSvg, event) {
             let pointRadius = pointSvg.get('r');
@@ -83,23 +81,23 @@ class Svg extends EventTarget {
                 x: currentTopLeftPositionInDom.x - currentTopLeftPositionInGrid.x,
                 y: currentTopLeftPositionInDom.y - currentTopLeftPositionInGrid.y,
             }
-            pointSvg.updateAttributes({
+            pointSvg.updateAndNotify({
                 cx: desiredCentrePositionInDom.x - offsets.x,
                 cy: desiredCentrePositionInDom.y - offsets.y,
             });
         }
 
         let startDrag = (event, pointSvg) => {
-            isDragging = true;
+            pointSvg.isDragging = true;
             computePointPosition(pointSvg, event);
         }
         let continueDrag = (event, pointSvg) => {
-            if (isDragging) {
+            if (pointSvg.isDragging) {
                 computePointPosition(pointSvg, event);
             }
         }
         let endDrag = (event, pointSvg) => {
-            isDragging = false;
+            pointSvg.isDragging = false;
         }
 
         let points = pointCoordinates.map(p => {
@@ -107,14 +105,12 @@ class Svg extends EventTarget {
               {cx: p.x, cy: p.y, r: 5},
               {cursor: 'pointer', fill: styles.stroke}
             );
-            pointSvg.$element.addEventListener('mousedown', (ev) => startDrag(ev, pointSvg));
-            pointSvg.$element.addEventListener('mousemove', (ev) => continueDrag(ev, pointSvg));
-            pointSvg.$element.addEventListener('mouseup', (ev) => endDrag(ev, pointSvg));
-            pointSvg.$element.addEventListener('mouseleave', (ev) => endDrag(ev, pointSvg));
-            // pointSvg.$element.addEventListener('touchstart', (ev) => (ev.preventDefault(), startDrag(ev, pointSvg)));
-            // pointSvg.$element.addEventListener('touchmove', (ev) => (ev.preventDefault(), continueDrag(ev, pointSvg)));
-            // pointSvg.$element.addEventListener('touchend', (ev) => (ev.preventDefault(), endDrag(ev, pointSvg)));
-            // pointSvg.$element.addEventListener('touchcancel', (ev) => (ev.preventDefault(), endDrag(ev, pointSvg)));
+            pointSvg.isDragging = false;
+            pointSvg.$element.addEventListener('pointerdown', (ev) => startDrag(ev, pointSvg));
+            // Note: we must add the move listener to the surrounding element to support inertial drag
+            this.$element.addEventListener('pointermove', (ev) => continueDrag(ev, pointSvg));
+            pointSvg.$element.addEventListener('pointerup', (ev) => endDrag(ev, pointSvg));
+            pointSvg.$element.addEventListener('pointercancel', (ev) => endDrag(ev, pointSvg));
 
             return pointSvg;
         });
