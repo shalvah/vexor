@@ -194,9 +194,11 @@ class Grid extends Svg {
       id,
       orient: 'auto-start-reverse',
       // 0,0 of the arrowhead is the end of the axis, so we must "translate" it
-      refX: 5, refY: 3
+      refX: 5, refY: 2
     });
-    arrowHead.path({d: 'M 0,0 L 6,3 L 0,6 Z'});
+
+    // 0,4 - 4 determines the width of the arrow's base
+    arrowHead.path({d: 'M 0,0 L 6,2 L 0,4 Z'});
     return arrowHead;
   }
 
