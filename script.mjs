@@ -27,19 +27,37 @@ let root = new Grid(`container`, {
 let vecA = root.vector({x: 0, y: 0}, {x: 20, y: 200},
   {strokeWidth: `2px`, stroke: `red`}, {
     labelPos: (line) => ({x: line.get('x2') + 4, y: line.get('y2') + 4}),
-    labelFn: (p1, p2) => `A (${p2.x}, ${p2.y})`
+    labelFn: (p1, p2) => `a (${p2.x}, ${p2.y})`
   }
 );
 
 let vecB = root.vector({x: 0, y: 0}, {x: 150, y: 150},
-  {strokeWidth: `2px`, stroke: `red`}, {
+  {strokeWidth: `2px`, stroke: `red`, }, {
     labelPos: (line) => ({x: line.get('x2') + 4, y: line.get('y2') + 4}),
-    labelFn: (p1, p2) => `B (${p2.x}, ${p2.y})`
+    labelFn: (p1, p2) => `b (${p2.x}, ${p2.y})`
   }
 );
 
 let vecAMinusB = root.differenceVector(vecA, vecB,
-  {strokeWidth: `2px`, stroke: `blue`}
+  {strokeWidth: `2px`, stroke: `blue`},{
+    labelPos: (line) => {
+      let midPoint = {
+        x: line.get('x1') + (Math.abs(line.get('x2')) - Math.abs(line.get('x1')))/2,
+        y: line.get('y1') + (Math.abs(line.get('y2'))  - Math.abs(line.get('y1')))/2,
+    };
+      return {
+        x: midPoint.x + 4,
+        y: midPoint.y + 4,
+      }
+    },
+    labelFn: (p1, p2) => {
+      let norm = Math.sqrt(
+        ((p2.x - p1.x)**2) + ((p2.y - p1.y)**2)
+      );
+      norm = Math.round(norm);
+      return `|a - b| ≈ ${norm}`;
+    }
+  }
 );
 
 /*

@@ -65,7 +65,7 @@ class Grid extends Svg {
       let labelAttributes = options.labelPos.call(null, line);
       let label = this.text(options.labelFn.call(null, p1, p2), labelAttributes);
       label.anchorTo(line, () => {
-        let newP1 = { x: line.get('x2'), y: line.get('y2') };
+        let newP1 = { x: line.get('x1'), y: line.get('y1') };
         let newP2 = { x: line.get('x2'), y: line.get('y2') };
         setAttributes(label.$element, options.labelPos.call(null, line));
         label.$element.innerHTML = options.labelFn.call(null, newP1, newP2);
@@ -75,12 +75,12 @@ class Grid extends Svg {
     return line;
   }
 
-  differenceVector(a, b, styles) {
+  differenceVector(a, b, styles, options) {
     styles = {"stroke-dasharray": "4", ...styles};
-    let line = this.vector(a.p2, b.p2, styles, {resizable: false});
+    let line = this.vector(a.p2, b.p2, styles, {...options, resizable: false});
     line.anchorTo([a, b], () => {
       // TODO better to update the wrapping class, rather than the DOM element directly
-      setAttributes(line.$element, {
+      line.updateAndNotify({
         x1: a.get(`x2`),
         y1: a.get(`y2`),
         x2: b.get(`x2`),
