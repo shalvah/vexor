@@ -45,8 +45,8 @@ function addDragEventListeners(pointSvg) {
   pointSvg.$element.addEventListener('pointerdown', (ev) => startDrag(ev, pointSvg));
   // Note: we must add the move listener to the surrounding element to support inertial (delayed) drag
   pointSvg.rootSvg.$element.addEventListener('pointermove', (ev) => continueDrag(ev, pointSvg));
-  pointSvg.$element.addEventListener('pointerup', (ev) => endDrag(ev, pointSvg));
-  pointSvg.$element.addEventListener('pointercancel', (ev) => endDrag(ev, pointSvg));
+  pointSvg.rootSvg.$element.addEventListener('pointerup', (ev) => endDrag(ev, pointSvg));
+  pointSvg.rootSvg.$element.addEventListener('pointercancel', (ev) => endDrag(ev, pointSvg));
 }
 
 function updatePointPosition(pointSvg, event) {
@@ -66,6 +66,8 @@ function updatePointPosition(pointSvg, event) {
     x: currentTopLeftPositionInDom.x - currentTopLeftPositionInGrid.x,
     y: currentTopLeftPositionInDom.y - currentTopLeftPositionInGrid.y,
   }
+
+  // We snap to the nearest integer
   pointSvg.updateAndNotify({
     cx: Math.round(desiredCentrePositionInDom.x - offsets.x),
     cy: Math.round(desiredCentrePositionInDom.y - offsets.y),

@@ -43,8 +43,9 @@ class Grid extends Svg {
     this.defaultStyles = defaultStyles;
   }
 
-  vector(p1, p2, styles = {}, options = {}) {
-    options = Object.assign({resizable: true, label: null}, options);
+  vector(p1, p2, options = {}) {
+    options = Object.assign({styles: {}, resizable: true, label: null}, options);
+    let styles = {...(this.defaultStyles.line || {}), ...options.styles};
 
     const arrowHead = this.makeArrowHead(`vector-arrowhead-${this.randomInt()}`, {fill: styles.stroke});
     let attributes = {
@@ -54,7 +55,7 @@ class Grid extends Svg {
       y2: p2.y,
       'marker-end': `url(#${arrowHead.getAttribute('id')})`,
     }
-    let line = this.line(attributes, {...(this.defaultStyles.line || {}), ...styles});
+    let line = this.line(attributes, styles);
     // TODO adding arbitrary properties not the best
     line.p1 = p1;
     line.p2 = p2;
@@ -75,9 +76,9 @@ class Grid extends Svg {
     return line;
   }
 
-  differenceVector(a, b, styles, options) {
-    styles = {"stroke-dasharray": "4", ...styles};
-    let line = this.vector(a.p2, b.p2, styles, {...options, resizable: false});
+  differenceVector(a, b, options) {
+    options.styles = {"stroke-dasharray": "4", ...(options.styles || {})};
+    let line = this.vector(a.p2, b.p2, {...options, resizable: false});
     line.anchorTo([a, b], () => {
       // TODO better to update the wrapping class, rather than the DOM element directly
       line.updateAndNotify({
