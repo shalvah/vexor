@@ -1,4 +1,6 @@
 import Svg from "./svg.mjs";
+import {makeResizable} from "./make_resizable.mjs";
+import {setAttributes} from "./utils.mjs";
 
 class Grid extends Svg {
   static AXIS_MARGIN = 32; // Gap between axes and screen edges (useful to insert number labels and axes labels)
@@ -6,7 +8,7 @@ class Grid extends Svg {
   static GAP_FROM_AXIS_LABEL_TOP_TO_AXIS = 20; // Gap between number labels and x-axis
   static GAP_FROM_AXIS_LABEL_END_TO_AXIS = 5; // Gap between number labels and y-axis
 
-  constructor(domElementId, {maxX, maxY, minX, minY}, options = {}) {
+  constructor(domElementId, {maxX, maxY, minX, minY, defaultStyles}, options = {}) {
     minX = minX ?? -maxX;
     minY = minY ?? -maxY;
     options.width = Math.abs(maxX) + Math.abs(minX) + 2 * Grid.AXIS_MARGIN;
@@ -33,14 +35,49 @@ class Grid extends Svg {
     this.minX = minX;
     this.minY = minY;
 
-    this.gridId = Math.floor(Math.random() * 1000);
+    this.gridId = this.randomInt();
 
     this.setUpAxes();
     this.drawGridLines();
+
+    this.defaultStyles = defaultStyles;
+  }
+
+  vector(p1, p2, styles = {}, resizable = true) {
+    const arrowHead = this.makeArrowHead(`vector-arrowhead-${this.randomInt()}`, { fill: styles.stroke});
+    let attributes = {
+      x1: p1.x,
+      y1: p1.y,
+      x2: p2.x,
+      y2: p2.y,
+      'marker-end': `url(#${arrowHead.getAttribute('id')})`,
+    }
+    let line = this.line(attributes, { ...(this.defaultStyles.line || {}), ...styles });
+    // TODO adding arbitrary properties not the best
+    line.p1 = p1; line.p2 = p2;
+    if (resizable) {
+      makeResizable(line, p2, {x: 'x2', y: 'y2'});
+    }
+    return line;
+  }
+
+  differenceVector(a, b, styles) {
+    styles = { "stroke-dasharray": "4", ...styles};
+    let line = this.vector(a.p2, b.p2, styles, false);
+    line.anchorTo([a, b], () => {
+      // TODO better to update the wrapping class, rather than the DOM element directly
+      setAttributes(line.$element, {
+        x1: a.get(`x2`),
+        y1: a.get(`y2`),
+        x2: b.get(`x2`),
+        y2: b.get(`y2`),
+      });
+    });
+    return line;
   }
 
   setUpAxes() {
-    this.arrowHead = this.makeArrowHead();
+    this.arrowHead = this.makeArrowHead(`axis-arrowhead-grid-${this.gridId}`);
     this.xAxis = this.#axis(
       {
         x1: this.minX - Grid.AXIS_MARGIN,
@@ -149,17 +186,22 @@ class Grid extends Svg {
     return this.minX < 0 || this.minY < 0;
   }
 
-  makeArrowHead() {
+  makeArrowHead(id, styles = {}) {
     let arrowHead = this.marker({
+      fill: styles.fill,
       markerWidth: 6,
       markerHeight: 6,
-      id: `axis-arrowhead-grid-${this.gridId}`,
+      id,
       orient: 'auto-start-reverse',
       // 0,0 of the arrowhead is the end of the axis, so we must "translate" it
       refX: 5, refY: 3
     });
     arrowHead.path({d: 'M 0,0 L 6,3 L 0,6 Z'});
     return arrowHead;
+  }
+
+  randomInt() {
+    return Math.floor(Math.random() * 1000);
   }
 }
 

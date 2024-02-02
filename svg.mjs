@@ -4,9 +4,10 @@ import {makeResizable} from "./make_resizable.mjs";
 export default class Svg extends EventTarget {
   static NAMESPACE_URI = 'http://www.w3.org/2000/svg';
 
-  constructor(elementType, parentDomElementOrId, attributes = {}, styles = {}, rootSvg = null) {
+  constructor(elementType, parentDomElementOrId, attributes = {}, styles = {}, {parentSvg, rootSvg} = {}) {
     super();
 
+    this.parentSvg = parentSvg;
     this.rootSvg = rootSvg;
 
     if (elementType === 'svg') {
@@ -28,7 +29,10 @@ export default class Svg extends EventTarget {
   }
 
   add(elementType, attributes = {}, styles = {}) {
-    return new Svg(elementType, this.$element, attributes, styles, this.rootSvg || this);
+    return new Svg(elementType, this.$element, attributes, styles, {
+      parentSvg: this,
+      rootSvg: this.rootSvg || this
+    });
   }
 
   // Update this element's attributes and emit an attributes_changed event
@@ -59,8 +63,8 @@ export default class Svg extends EventTarget {
       {x: attributes.x1, y: attributes.y1},
       {x: attributes.x2, y: attributes.y2},
     ];
-    makeResizable(line, endpoints[0], {x: 'x1', y: 'y1' }, group);
-    makeResizable(line, endpoints[1], {x: 'x2', y: 'y2' }, group);
+    makeResizable(line, endpoints[0], {x: 'x1', y: 'y1'});
+    makeResizable(line, endpoints[1], {x: 'x2', y: 'y2'});
     return line;
   }
 

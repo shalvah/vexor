@@ -1,14 +1,15 @@
 import {setAttributes} from "./utils.mjs"
 
-export let makeResizable = (svg, draggablePoint, attributesMap, parentSvg) => {
-  let pointSvg = makePointDraggable(draggablePoint, parentSvg);
+export let makeResizable = (svg, draggablePoint, attributesMap) => {
+  let pointSvg = makePointDraggable(draggablePoint, svg.parentSvg);
 
   // Set the SVG to update its coordinates when the point is moved
   svg.anchorTo([pointSvg], () => {
-    setAttributes(svg, {
+    svg.updateAndNotify({
       [attributesMap.x]: pointSvg.get('cx'), [attributesMap.y]: pointSvg.get('cy'),
     });
   });
+  return svg;
 }
 
 function makePointDraggable({x, y}, parentSvg) {
@@ -22,6 +23,7 @@ function createDragHandleAtPoint({x, y}, parentSvg) {
     {cx: x, cy: y, r: 2},
     {cursor: 'pointer', fill: parentSvg.styles.stroke, padding: '70px'}
   );
+  // TODO adding arbitrary properties not the best
   pointSvg.isDragging = false;
   return pointSvg;
 }

@@ -2,20 +2,39 @@ import Grid from "./grid.mjs";
 
 let root = new Grid(`container`, {
   maxX: 300, maxY: 300,
-  minX: 0, minY: 0
+  minX: 0, minY: 0,
+  defaultStyles: {
+    line: {
+      strokeWidth: `2px`,
+      stroke: `black`,
+      fill: 'none'
+    }
+  }
 });
-root.path(
-  {d: `M 50,50 L 200,200`},
-  {strokeWidth: `2px`, stroke: `green`}
-);
-root.circle(
-  {cx: `150`, cy: `100`, r: `50`},
-  {strokeWidth: `2px`, stroke: `red`, fill: 'none'}
-)
+// root.path(
+//   {d: `M 50,50 L 200,200`},
+//   {strokeWidth: `2px`, stroke: `green`}
+// );
+// root.circle(
+//   {cx: `150`, cy: `100`, r: `50`},
+//   {strokeWidth: `2px`, stroke: `red`, fill: 'none'}
+// )
 root.draggableLine(
   {x1: `150`, y1: `100`, x2: `50`, y2: `140`},
   {strokeWidth: `2px`, stroke: `blue`, fill: 'none'}
 )
+
+let vecA = root.vector({x: 0, y: 0}, {x: 20, y: 200},
+  {strokeWidth: `2px`, stroke: `red`},
+);
+
+let vecB = root.vector({x: 0, y: 0}, {x: 150, y: 150},
+  {strokeWidth: `2px`, stroke: `red`},
+);
+
+let vecC = root.differenceVector(vecA, vecB,
+  {strokeWidth: `2px`, stroke: `blue` }
+);
 
 /*
 
