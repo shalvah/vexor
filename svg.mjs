@@ -45,7 +45,7 @@ export default class Svg extends EventTarget {
 
   // Call an update function when when any of these other elements emit an attributes_changed event
   anchorTo(svgElements, updateFn) {
-    svgElements.forEach(el => {
+    [svgElements].flat().forEach(el => {
       el.addEventListener('attributes_changed', updateFn);
     });
   }

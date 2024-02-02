@@ -19,17 +19,17 @@ let root = new Grid(`container`, {
 //   {cx: `150`, cy: `100`, r: `50`},
 //   {strokeWidth: `2px`, stroke: `red`, fill: 'none'}
 // )
-root.draggableLine(
-  {x1: `150`, y1: `100`, x2: `50`, y2: `140`},
-  {strokeWidth: `2px`, stroke: `blue`, fill: 'none'}
-)
+// root.draggableLine(
+//   {x1: `150`, y1: `100`, x2: `50`, y2: `140`},
+//   {strokeWidth: `2px`, stroke: `blue`, fill: 'none'}
+// )
 
 let vecA = root.vector({x: 0, y: 0}, {x: 20, y: 200},
-  {strokeWidth: `2px`, stroke: `red`},
+  {strokeWidth: `2px`, stroke: `red`}, {label: (p1, p2) => `A (${p2.x}, ${p2.y})`}
 );
 
 let vecB = root.vector({x: 0, y: 0}, {x: 150, y: 150},
-  {strokeWidth: `2px`, stroke: `red`},
+  {strokeWidth: `2px`, stroke: `red`}, {label: (p1, p2) => `B (${p2.x}, ${p2.y})`}
 );
 
 let vecC = root.differenceVector(vecA, vecB,

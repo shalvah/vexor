@@ -43,8 +43,10 @@ class Grid extends Svg {
     this.defaultStyles = defaultStyles;
   }
 
-  vector(p1, p2, styles = {}, resizable = true) {
-    const arrowHead = this.makeArrowHead(`vector-arrowhead-${this.randomInt()}`, { fill: styles.stroke});
+  vector(p1, p2, styles = {}, options = {}) {
+    options = Object.assign({resizable: true, label: null}, options);
+
+    const arrowHead = this.makeArrowHead(`vector-arrowhead-${this.randomInt()}`, {fill: styles.stroke});
     let attributes = {
       x1: p1.x,
       y1: p1.y,
@@ -52,18 +54,36 @@ class Grid extends Svg {
       y2: p2.y,
       'marker-end': `url(#${arrowHead.getAttribute('id')})`,
     }
-    let line = this.line(attributes, { ...(this.defaultStyles.line || {}), ...styles });
+    let line = this.line(attributes, {...(this.defaultStyles.line || {}), ...styles});
     // TODO adding arbitrary properties not the best
-    line.p1 = p1; line.p2 = p2;
-    if (resizable) {
+    line.p1 = p1;
+    line.p2 = p2;
+    if (options.resizable) {
       makeResizable(line, p2, {x: 'x2', y: 'y2'});
     }
+    if (options.label) {
+      let labelAttributes = {
+        x: p2.x + 4,
+        y: p2.y + 4,
+      };
+      let label = this.text(options.label.call(null, p1, p2), labelAttributes);
+      label.anchorTo(line, () => {
+        let newP1 = { x: line.get('x2'), y: line.get('y2') };
+        let newP2 = { x: line.get('x2'), y: line.get('y2') };
+        setAttributes(label.$element, {
+          x: newP2.x + 4,
+          y: newP2.y + 4,
+        });
+        label.$element.innerHTML = options.label.call(null, newP1, newP2);
+      });
+    }
+
     return line;
   }
 
   differenceVector(a, b, styles) {
-    styles = { "stroke-dasharray": "4", ...styles};
-    let line = this.vector(a.p2, b.p2, styles, false);
+    styles = {"stroke-dasharray": "4", ...styles};
+    let line = this.vector(a.p2, b.p2, styles, {resizable: false});
     line.anchorTo([a, b], () => {
       // TODO better to update the wrapping class, rather than the DOM element directly
       setAttributes(line.$element, {
