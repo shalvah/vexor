@@ -1,11 +1,13 @@
 import { setStyles, setAttributes } from "./utils.mjs"
-import DraggableLine from "./draggable_line.mjs";
+import {makeResizable} from "./make_resizable.mjs";
 
 export default class Svg extends EventTarget {
     static NAMESPACE_URI = 'http://www.w3.org/2000/svg';
 
-    constructor(elementType, parentDomElementOrId, attributes = {}, styles = {}) {
-        super()
+    constructor(elementType, parentDomElementOrId, attributes = {}, styles = {}, rootSvg = null) {
+        super();
+
+        this.rootSvg = rootSvg;
 
         if (elementType === 'svg') {
             attributes = {
@@ -14,6 +16,7 @@ export default class Svg extends EventTarget {
             }
         }
         this.elementType = elementType;
+        this.styles = styles;
         this.$element = document.createElementNS(Svg.NAMESPACE_URI, elementType);
         setAttributes(this.$element, attributes);
         setStyles(this.$element, styles);
@@ -25,19 +28,10 @@ export default class Svg extends EventTarget {
     }
 
     add(elementType, attributes = {}, styles = {}) {
-        return new Svg(elementType, this.$element, attributes, styles);
+        return new Svg(elementType, this.$element, attributes, styles, this.rootSvg || this);
     }
 
-    line(attributes, styles = {}) {
-        return this.add(`line`, attributes, styles);
-    }
-
-    anchorTo(svgElements, updateFn) {
-        svgElements.forEach(el => {
-            el.addEventListener('attributes_changed', updateFn);
-        });
-    }
-
+    // Update this element's attributes and emit an attributes_changed event
     updateAndNotify(attributes) {
         setAttributes(this, attributes);
         this.dispatchEvent(new CustomEvent("attributes_changed", {
@@ -45,8 +39,27 @@ export default class Svg extends EventTarget {
         }));
     }
 
+    // Call an update function when when any of these other elements emit an attributes_changed event
+    anchorTo(svgElements, updateFn) {
+        svgElements.forEach(el => {
+            el.addEventListener('attributes_changed', updateFn);
+        });
+    }
+
+    line(attributes, styles = {}) {
+        return this.add(`line`, attributes, styles);
+    }
+
     draggableLine(attributes, styles = {}) {
-        return new DraggableLine(attributes, styles, this).line;
+        let group = this.grouped(styles);
+        // First, draw the line
+        let line = group.line(attributes);
+        let endpoints = [
+            {x: attributes.x1, y: attributes.y1},
+            {x: attributes.x2, y: attributes.y2},
+        ];
+        makeResizable(line, endpoints, group);
+        return line;
     }
 
     circle(attributes, styles = {}) {
