@@ -25,15 +25,21 @@ let root = new Grid(`container`, {
 // )
 
 let vecA = root.vector({x: 0, y: 0}, {x: 20, y: 200},
-  {strokeWidth: `2px`, stroke: `red`}, {label: (p1, p2) => `A (${p2.x}, ${p2.y})`}
+  {strokeWidth: `2px`, stroke: `red`}, {
+    labelPos: (line) => ({x: line.get('x2') + 4, y: line.get('y2') + 4}),
+    labelFn: (p1, p2) => `A (${p2.x}, ${p2.y})`
+  }
 );
 
 let vecB = root.vector({x: 0, y: 0}, {x: 150, y: 150},
-  {strokeWidth: `2px`, stroke: `red`}, {label: (p1, p2) => `B (${p2.x}, ${p2.y})`}
+  {strokeWidth: `2px`, stroke: `red`}, {
+    labelPos: (line) => ({x: line.get('x2') + 4, y: line.get('y2') + 4}),
+    labelFn: (p1, p2) => `B (${p2.x}, ${p2.y})`
+  }
 );
 
-let vecC = root.differenceVector(vecA, vecB,
-  {strokeWidth: `2px`, stroke: `blue` }
+let vecAMinusB = root.differenceVector(vecA, vecB,
+  {strokeWidth: `2px`, stroke: `blue`}
 );
 
 /*

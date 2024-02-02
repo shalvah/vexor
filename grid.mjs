@@ -61,20 +61,14 @@ class Grid extends Svg {
     if (options.resizable) {
       makeResizable(line, p2, {x: 'x2', y: 'y2'});
     }
-    if (options.label) {
-      let labelAttributes = {
-        x: p2.x + 4,
-        y: p2.y + 4,
-      };
-      let label = this.text(options.label.call(null, p1, p2), labelAttributes);
+    if (options.labelPos) {
+      let labelAttributes = options.labelPos.call(null, line);
+      let label = this.text(options.labelFn.call(null, p1, p2), labelAttributes);
       label.anchorTo(line, () => {
         let newP1 = { x: line.get('x2'), y: line.get('y2') };
         let newP2 = { x: line.get('x2'), y: line.get('y2') };
-        setAttributes(label.$element, {
-          x: newP2.x + 4,
-          y: newP2.y + 4,
-        });
-        label.$element.innerHTML = options.label.call(null, newP1, newP2);
+        setAttributes(label.$element, options.labelPos.call(null, line));
+        label.$element.innerHTML = options.labelFn.call(null, newP1, newP2);
       });
     }
 

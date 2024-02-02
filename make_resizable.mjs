@@ -67,7 +67,7 @@ function updatePointPosition(pointSvg, event) {
     y: currentTopLeftPositionInDom.y - currentTopLeftPositionInGrid.y,
   }
   pointSvg.updateAndNotify({
-    cx: desiredCentrePositionInDom.x - offsets.x,
-    cy: desiredCentrePositionInDom.y - offsets.y,
+    cx: Math.round(desiredCentrePositionInDom.x - offsets.x),
+    cy: Math.round(desiredCentrePositionInDom.y - offsets.y),
   });
 }
