@@ -1,18 +1,7 @@
-let setStyles = ($element, styles = {}) => {
-    Object.entries(styles).forEach(([k, v]) => {
-        $element.style[k] = v;
-    });
-    return $element;
-}
+import { setStyles, setAttributes } from "./utils.mjs"
+import DraggableLine from "./draggable_line.mjs";
 
-let setAttributes = ($element, attributes = {}) => {
-    Object.entries(attributes).forEach(([k, v]) => {
-        $element.setAttribute(k, v);
-    });
-    return $element;
-}
-
-class Svg extends EventTarget {
+export default class Svg extends EventTarget {
     static NAMESPACE_URI = 'http://www.w3.org/2000/svg';
 
     constructor(elementType, parentDomElementOrId, attributes = {}, styles = {}) {
@@ -57,71 +46,7 @@ class Svg extends EventTarget {
     }
 
     draggableLine(attributes, styles = {}) {
-        let group = this.grouped(styles);
-        let line = group.line(attributes);
-        let pointCoordinates = [
-          {x: attributes.x1, y: attributes.y1},
-          {x: attributes.x2, y: attributes.y2},
-        ];
-
-        function computePointPosition(pointSvg, event) {
-            let pointRadius = pointSvg.get('r');
-            let domRect = pointSvg.$element.getBoundingClientRect();
-            let currentTopLeftPositionInDom = {
-                x: domRect.x,
-                y: domRect.y,
-            };
-            let desiredCentrePositionInDom = {x: event.x, y: event.y}
-            let currentCentrePositionInGrid = {x: pointSvg.get('cx'), y: pointSvg.get('cy')}
-            let currentTopLeftPositionInGrid = {
-                x: currentCentrePositionInGrid.x - pointRadius,
-                y: currentCentrePositionInGrid.y - pointRadius,
-            }
-            let offsets = {
-                x: currentTopLeftPositionInDom.x - currentTopLeftPositionInGrid.x,
-                y: currentTopLeftPositionInDom.y - currentTopLeftPositionInGrid.y,
-            }
-            pointSvg.updateAndNotify({
-                cx: desiredCentrePositionInDom.x - offsets.x,
-                cy: desiredCentrePositionInDom.y - offsets.y,
-            });
-        }
-
-        let startDrag = (event, pointSvg) => {
-            pointSvg.isDragging = true;
-            computePointPosition(pointSvg, event);
-        }
-        let continueDrag = (event, pointSvg) => {
-            if (pointSvg.isDragging) {
-                computePointPosition(pointSvg, event);
-            }
-        }
-        let endDrag = (event, pointSvg) => {
-            pointSvg.isDragging = false;
-        }
-
-        let points = pointCoordinates.map(p => {
-            let pointSvg = group.circle(
-              {cx: p.x, cy: p.y, r: 5},
-              {cursor: 'pointer', fill: styles.stroke}
-            );
-            pointSvg.isDragging = false;
-            pointSvg.$element.addEventListener('pointerdown', (ev) => startDrag(ev, pointSvg));
-            // Note: we must add the move listener to the surrounding element to support inertial drag
-            this.$element.addEventListener('pointermove', (ev) => continueDrag(ev, pointSvg));
-            pointSvg.$element.addEventListener('pointerup', (ev) => endDrag(ev, pointSvg));
-            pointSvg.$element.addEventListener('pointercancel', (ev) => endDrag(ev, pointSvg));
-
-            return pointSvg;
-        });
-
-        line.anchorTo(points, () => {
-            setAttributes(line, {
-                x1: points[0].get('cx'), y1: points[0].get('cy'),
-                x2: points[1].get('cx'), y2: points[1].get('cy'),
-            });
-        });
-        return line;
+        return new DraggableLine(attributes, styles, this).line;
     }
 
     circle(attributes, styles = {}) {
@@ -165,5 +90,3 @@ class Svg extends EventTarget {
         return Number(this.$element.getAttribute(attribute));
     }
 }
-
-export default Svg;

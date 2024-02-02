@@ -17,13 +17,6 @@ root.draggableLine(
   {strokeWidth: `2px`, stroke: `blue`, fill: 'none'}
 )
 
-// Motivation
-// Demonstrating vector db article
-// School work
-// Inspirations:
-// https://vectorjs.org/
-// https://www.petercollingridge.co.uk/tools/interactivesvgjs/
-
 /*
 
 
