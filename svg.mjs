@@ -54,11 +54,13 @@ export default class Svg extends EventTarget {
     let group = this.grouped(styles);
     // First, draw the line
     let line = group.line(attributes);
+    // Then make its endpoints resizable
     let endpoints = [
       {x: attributes.x1, y: attributes.y1},
       {x: attributes.x2, y: attributes.y2},
     ];
-    makeResizable(line, endpoints, group);
+    makeResizable(line, endpoints[0], {x: 'x1', y: 'y1' }, group);
+    makeResizable(line, endpoints[1], {x: 'x2', y: 'y2' }, group);
     return line;
   }
 
