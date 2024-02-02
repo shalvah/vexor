@@ -1,105 +1,105 @@
-import { setStyles, setAttributes } from "./utils.mjs"
+import {setStyles, setAttributes} from "./utils.mjs"
 import {makeResizable} from "./make_resizable.mjs";
 
 export default class Svg extends EventTarget {
-    static NAMESPACE_URI = 'http://www.w3.org/2000/svg';
+  static NAMESPACE_URI = 'http://www.w3.org/2000/svg';
 
-    constructor(elementType, parentDomElementOrId, attributes = {}, styles = {}, rootSvg = null) {
-        super();
+  constructor(elementType, parentDomElementOrId, attributes = {}, styles = {}, rootSvg = null) {
+    super();
 
-        this.rootSvg = rootSvg;
+    this.rootSvg = rootSvg;
 
-        if (elementType === 'svg') {
-            attributes = {
-                ...attributes,
-                xmlns: Svg.NAMESPACE_URI,
-            }
-        }
-        this.elementType = elementType;
-        this.styles = styles;
-        this.$element = document.createElementNS(Svg.NAMESPACE_URI, elementType);
-        setAttributes(this.$element, attributes);
-        setStyles(this.$element, styles);
-
-        let parentDomElement = (typeof parentDomElementOrId == 'string') ?
-          document.querySelector(`#${parentDomElementOrId}`) : parentDomElementOrId;
-
-        parentDomElement.appendChild(this.$element);
+    if (elementType === 'svg') {
+      attributes = {
+        ...attributes,
+        xmlns: Svg.NAMESPACE_URI,
+      }
     }
+    this.elementType = elementType;
+    this.styles = styles;
+    this.$element = document.createElementNS(Svg.NAMESPACE_URI, elementType);
+    setAttributes(this.$element, attributes);
+    setStyles(this.$element, styles);
 
-    add(elementType, attributes = {}, styles = {}) {
-        return new Svg(elementType, this.$element, attributes, styles, this.rootSvg || this);
-    }
+    let parentDomElement = (typeof parentDomElementOrId == 'string') ?
+      document.querySelector(`#${parentDomElementOrId}`) : parentDomElementOrId;
 
-    // Update this element's attributes and emit an attributes_changed event
-    updateAndNotify(attributes) {
-        setAttributes(this, attributes);
-        this.dispatchEvent(new CustomEvent("attributes_changed", {
-            detail: attributes
-        }));
-    }
+    parentDomElement.appendChild(this.$element);
+  }
 
-    // Call an update function when when any of these other elements emit an attributes_changed event
-    anchorTo(svgElements, updateFn) {
-        svgElements.forEach(el => {
-            el.addEventListener('attributes_changed', updateFn);
-        });
-    }
+  add(elementType, attributes = {}, styles = {}) {
+    return new Svg(elementType, this.$element, attributes, styles, this.rootSvg || this);
+  }
 
-    line(attributes, styles = {}) {
-        return this.add(`line`, attributes, styles);
-    }
+  // Update this element's attributes and emit an attributes_changed event
+  updateAndNotify(attributes) {
+    setAttributes(this, attributes);
+    this.dispatchEvent(new CustomEvent("attributes_changed", {
+      detail: attributes
+    }));
+  }
 
-    draggableLine(attributes, styles = {}) {
-        let group = this.grouped(styles);
-        // First, draw the line
-        let line = group.line(attributes);
-        let endpoints = [
-            {x: attributes.x1, y: attributes.y1},
-            {x: attributes.x2, y: attributes.y2},
-        ];
-        makeResizable(line, endpoints, group);
-        return line;
-    }
+  // Call an update function when when any of these other elements emit an attributes_changed event
+  anchorTo(svgElements, updateFn) {
+    svgElements.forEach(el => {
+      el.addEventListener('attributes_changed', updateFn);
+    });
+  }
 
-    circle(attributes, styles = {}) {
-        return this.add(`circle`, attributes, styles);
-    }
+  line(attributes, styles = {}) {
+    return this.add(`line`, attributes, styles);
+  }
 
-    text(content, attributes, styles = {}) {
-        const text = this.add(`text`, attributes, styles);
-        text.$element.innerHTML = content;
-        return text;
-    }
+  draggableLine(attributes, styles = {}) {
+    let group = this.grouped(styles);
+    // First, draw the line
+    let line = group.line(attributes);
+    let endpoints = [
+      {x: attributes.x1, y: attributes.y1},
+      {x: attributes.x2, y: attributes.y2},
+    ];
+    makeResizable(line, endpoints, group);
+    return line;
+  }
 
-    foreignObject(content, attributes = {}, styles = {}) {
-        const foreignObject = this.add(`foreignObject`, attributes, styles);
-        foreignObject.$element.innerHTML = content;
-        return foreignObject;
-    }
+  circle(attributes, styles = {}) {
+    return this.add(`circle`, attributes, styles);
+  }
 
-    marker(attributes, styles = {}) {
-        return this.add(`marker`, attributes, styles);
-    }
+  text(content, attributes, styles = {}) {
+    const text = this.add(`text`, attributes, styles);
+    text.$element.innerHTML = content;
+    return text;
+  }
 
-    path(attributes, styles = {}) {
-        return this.add(`path`, attributes, styles);
-    }
+  foreignObject(content, attributes = {}, styles = {}) {
+    const foreignObject = this.add(`foreignObject`, attributes, styles);
+    foreignObject.$element.innerHTML = content;
+    return foreignObject;
+  }
 
-    grouped(styles = {}) {
-        return this.add(`g`, {}, styles);
-    }
+  marker(attributes, styles = {}) {
+    return this.add(`marker`, attributes, styles);
+  }
 
-    setAttribute(attribute, value) {
-        return this.$element.setAttribute(attribute, value);
-    }
+  path(attributes, styles = {}) {
+    return this.add(`path`, attributes, styles);
+  }
 
-    getAttribute(attribute) {
-        return this.$element.getAttribute(attribute);
-    }
+  grouped(styles = {}) {
+    return this.add(`g`, {}, styles);
+  }
 
-    // Shortcut to get coordinate
-    get(attribute) {
-        return Number(this.$element.getAttribute(attribute));
-    }
+  setAttribute(attribute, value) {
+    return this.$element.setAttribute(attribute, value);
+  }
+
+  getAttribute(attribute) {
+    return this.$element.getAttribute(attribute);
+  }
+
+  // Shortcut to get coordinate
+  get(attribute) {
+    return Number(this.$element.getAttribute(attribute));
+  }
 }
