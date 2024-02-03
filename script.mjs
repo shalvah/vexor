@@ -2,8 +2,8 @@ import Grid from "./grid.mjs";
 import Vector from "./vector.mjs";
 
 let grid1 = new Grid(`container1`, {
-  maxX: 300, maxY: 300,
-  minX: 0, minY: 0,
+  maxX: 200, maxY: 200,
+  minX: -200, minY: -200,
   defaultStyles: {
     line: {
       strokeWidth: `2px`,
@@ -38,8 +38,8 @@ let vecAMinusB = grid1.vectorDifference(vecA1, vecB1,
 
 // TODO introduce .cloneTo(otherElement) ?
 let grid2 = new Grid(`container2`, {
-  maxX: 300, maxY: 300,
-  minX: 0, minY: 0,
+  maxX: 200, maxY: 200,
+  minX: -200, minY: -200,
   defaultStyles: {
     line: {
       strokeWidth: `2px`,
