@@ -63,6 +63,8 @@ let vecAPlusB = grid2.vectorSum(vecA2, vecB2,
 vecA1.mirror(vecA2);
 vecB1.mirror(vecB2);
 
+// TODO: scalar computations eg dot Product
+
 // My ideal API (vector-based, not grid/DOM-based):
 // let vecA = new Vector(...);
 // let vecB = new Vector(...);
