@@ -20,7 +20,7 @@ function makePointDraggable({x, y}, svg) {
 function createDragHandleAtPoint({x, y}, svg) {
   let strokeColour = getComputedStyle(svg.$element).getPropertyValue('stroke');
   let pointSvg = svg.parentSvg.circle(
-    {cx: x, cy: y, r: 6},
+    {cx: x, cy: y, r: 12},
     {cursor: 'pointer', stroke: strokeColour, strokeWidth: '0.5px', fill: 'transparent'}
   );
   // TODO adding arbitrary properties not the best
