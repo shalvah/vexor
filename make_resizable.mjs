@@ -1,6 +1,6 @@
 
-export let makeResizable = (svg, draggablePoint, attributesMap) => {
-  let pointSvg = makePointDraggable(draggablePoint, svg);
+export let makeResizable = (svg, draggablePoint, attributesMap, resolution = 10) => {
+  let pointSvg = makePointDraggable(draggablePoint, svg, resolution);
 
   // Set the SVG to update its coordinates when the point is moved
   svg.anchorTo([pointSvg], () => {
@@ -11,8 +11,10 @@ export let makeResizable = (svg, draggablePoint, attributesMap) => {
   return pointSvg;
 }
 
-function makePointDraggable({x, y}, svg) {
+function makePointDraggable({x, y}, svg, resolution) {
   let pointSvg = createDragHandleAtPoint({x, y}, svg);
+  // TODO adding arbitrary properties no good!
+  pointSvg.resolution = resolution;
   addDragEventListeners(pointSvg);
   return pointSvg;
 }
@@ -69,9 +71,12 @@ function updatePointPosition(pointSvg, event) {
     y: currentTopLeftPositionInDom.y - currentTopLeftPositionInGrid.y,
   }
 
-  // We snap to the nearest integer
+  // We snap to the nearest integer, 10, 20, etc...
+  const constrain = (value) => {
+    return Math.round(value/pointSvg.resolution) * pointSvg.resolution;
+  }
   pointSvg.updateAndNotify({
-    cx: Math.round(desiredCentrePositionInDom.x - offsets.x),
-    cy: Math.round(desiredCentrePositionInDom.y - offsets.y),
+    cx: constrain(desiredCentrePositionInDom.x - offsets.x),
+    cy: constrain(desiredCentrePositionInDom.y - offsets.y),
   });
 }

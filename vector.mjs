@@ -50,7 +50,7 @@ export default class Vector extends EventTarget {
 
     if (options.resizable) {
       // TODO This (and its usages) assume dragging at the tip only
-      this.dragHandle = makeResizable(this.line, initialPosition.p2, {x: 'x2', y: 'y2'});
+      this.dragHandle = makeResizable(this.line, initialPosition.p2, {x: 'x2', y: 'y2'}, options.resolution || 10);
     }
 
     if (options.label) {
