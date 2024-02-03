@@ -10,7 +10,7 @@ Current abilities:
 - Easily add sum and difference vectors
 - "Mirror" vectors across grids
 
-See demo. Example usage:
+See [demo](http://shalvah.me/vex). Example usage:
 
 ```js
 let grid = new Grid(`container`, {

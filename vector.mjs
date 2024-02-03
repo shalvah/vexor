@@ -2,14 +2,14 @@ import {randomInt} from "./utils.mjs";
 import {makeResizable} from "./make_resizable.mjs";
 
 const LABEL_POSITIONS = {
-  tip: ({p1, p2}) => ({x: p2.x + 4, y: p2.y + 4}),
+  tip: ({p1, p2}) => ({x: p2.x + 6, y: p2.y + 6}),
   midPoint: ({p1, p2}) => {
     let midPoint = {
       x: p1.x + (p2.x - p1.x) / 2,
       y: p1.y + (p2.y - p1.y) / 2,
     };
     return {
-      x: midPoint.x + 4, y: midPoint.y + 4,
+      x: midPoint.x + 6, y: midPoint.y + 6,
     }
   },
 };
