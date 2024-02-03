@@ -1,8 +1,6 @@
 Rough library for visualizing 2D vectors (linear algebra), inspired by [Vector.js](https://vectorjs.org).
 
-
 Goal: simple diagrams of interactive 2D vectors on a Cartesian grid
-
 
 Current abilities:
 - Graph and style 2D vectors
@@ -53,7 +51,7 @@ let vecAPlusB = grid.vectorSum(vecA, vecB,
 
 Motivation: 
 - Demonstrating vectors for articles (eg https://blog.shalvah.me/posts/learn-svg-by-drawing-an-arrow)
-- Visualizing School work
+- Schoolwork
 
 Inspirations:
 - https://vectorjs.org/
