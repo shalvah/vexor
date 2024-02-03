@@ -5,9 +5,10 @@ Goal: simple diagrams of interactive 2D vectors on a Cartesian grid
 
 
 Current abilities:
-- Graph simple vectors that can be resized
+- Graph and style 2D vectors
+- Resize vectors via mouse or touch (although touch support is janky)
 - Vector labels auto-update
-- Easily add sum and difference vectors
+- Easily add sum and difference vectors (which also auto-update)
 - "Mirror" vectors across grids
 
 See [demo](http://shalvah.me/vex). Example usage:
