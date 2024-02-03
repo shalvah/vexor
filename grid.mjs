@@ -60,6 +60,15 @@ class Grid extends Svg {
     );
   }
 
+  sumVector(a, b, options) {
+    options.styles = {"stroke-dasharray": "4", ...(options.styles || {})};
+    return this.vector(
+      () => a.p1,
+      () => ({x: (a.p2.x + b.p2.x), y: (a.p2.y + b.p2.y)}),
+      {...options, resizable: false, anchorTo: [a, b]}
+    );
+  }
+
   setUpAxes() {
     this.#axisArrowHead = this.arrowHead(`axis-arrowhead-grid-${this.gridId}`);
     this.xAxis = this.#axis(
