@@ -1,6 +1,6 @@
 import Grid from "./grid.mjs";
 
-let root = new Grid(`container`, {
+let grid1 = new Grid(`container1`, {
   maxX: 300, maxY: 300,
   minX: 0, minY: 0,
   defaultStyles: {
@@ -24,20 +24,14 @@ let root = new Grid(`container`, {
 //   {strokeWidth: `2px`, stroke: `blue`, fill: 'none'}
 // )
 
-let vecA = root.vector({x: 0, y: 0}, {x: 20, y: 100}, {
-    labelContent: (p1, p2) => `a (${p2.x}, ${p2.y})`
-  }
-);
+let vecA1 = grid1.vector('a', {x: 0, y: 0}, {x: 20, y: 100});
 
-let vecB = root.vector({x: 0, y: 0}, {x: 150, y: 150}, {
-    labelContent: (p1, p2) => `b (${p2.x}, ${p2.y})`
-  }
-);
+let vecB1 = grid1.vector('b', {x: 0, y: 0}, {x: 150, y: 150});
 
-let vecAMinusB = root.differenceVector(vecA, vecB,
+let vecAMinusB = grid1.vectorDifference(vecA1, vecB1,
   {
     styles: {stroke: `blue`},
-    labelPosition: (p1, p2) => {
+    labelPosition: ({p1, p2}) => {
       let midPoint = {
         x: p1.x + (p2.x - p1.x) / 2,
         y: p1.y + (p2.y - p1.y) / 2,
@@ -46,17 +40,32 @@ let vecAMinusB = root.differenceVector(vecA, vecB,
         x: midPoint.x + 4, y: midPoint.y + 4,
       }
     },
-    labelContent: (p1, p2) => {
-      let norm = Math.sqrt(((p2.x - p1.x) ** 2) + ((p2.y - p1.y) ** 2));
-      return `|a - b| ≈ ${Math.round(norm)}`;
+    labelContent: (vector) => {
+      return `|${vector.name}| ≈ ${Math.round(vector.length)}`;
     }
   }
 );
 
-let vecAPlusB = root.sumVector(vecA, vecB,
+let grid2 = new Grid(`container2`, {
+  maxX: 300, maxY: 300,
+  minX: 0, minY: 0,
+  defaultStyles: {
+    line: {
+      strokeWidth: `2px`,
+      stroke: `red`,
+      fill: 'none'
+    }
+  }
+});
+
+let vecA2 = grid2.vector('a', {x: 0, y: 0}, {x: 20, y: 100});
+
+let vecB2 = grid2.vector('b', {x: 0, y: 0}, {x: 150, y: 150});
+
+let vecAPlusB = grid2.vectorSum(vecA2, vecB2,
   {
     styles: {stroke: `green`},
-    labelPosition: (p1, p2) => {
+    labelPosition: ({p1, p2}) => {
       let midPoint = {
         x: p1.x + (p2.x - p1.x) / 2,
         y: p1.y + (p2.y - p1.y) / 2,
@@ -65,60 +74,9 @@ let vecAPlusB = root.sumVector(vecA, vecB,
         x: midPoint.x + 4, y: midPoint.y + 4,
       }
     },
-    labelContent: (p1, p2) => {
-      let norm = Math.sqrt(((p2.x - p1.x) ** 2) + ((p2.y - p1.y) ** 2));
-      return `|a + b| ≈ ${Math.round(norm)}`;
+    labelContent: (vector) => {
+      return `|${vector.name}| ≈ ${Math.round(vector.length)}`;
     }
   }
 );
 
-/*
-
-
-function makeVector(destinationX, destinationY, {name, coordinates} = {}) {
-    // Construct a control point at the the location (100, 100)
-    // let point = interactive.control(destinationX, destinationY);
-    // constrainPointToGrid(point);
-
-    let arrow = makeArrow(destinationX, destinationY);
-
-    // Make the vectors draggable by adding a control (hide the point)
-    let anchor = interactive.control(destinationX, destinationY);
-    anchor.point.style.display = 'none';
-    anchor.handle.style.cursor = 'pointer';
-    arrow.addDependency(anchor);
-    arrow.update = function () {
-        arrow.x2 = anchor.x
-        arrow.y2 = anchor.y
-    }
-
-    if (name || coordinates) {
-        let label = makeReactiveElement('text', function () {
-            this.x = arrow.x2 < 0 ? arrow.x2 - 6 : arrow.x2 + 6;
-            this.y = arrow.y2 < 0 ? arrow.y2 - 6 : arrow.y2 + 6;
-            this.contents = (coordinates && name) ?
-                `<foreignObject x="${this.x}" y="${this.y}" width="160" height="160">
-<math xmlns="http://www.w3.org/1998/Math/MathML"><mrow><mi>${name}</mi></mrow></math> (${arrow.x2}, ${arrow.y2})</foreignObject>`
-                : (coordinates ? `(${arrow.x2}, ${arrow.y2})` : `${name}`);
-        }, [anchor]);
-    }
-
-    return arrow;
-}
-
-function constrainPointToGrid(point) {
-    point.constrainWithinBox(xAxis.x1, yAxis.y1, xAxis.x2, yAxis.y2)
-}
-
-function makeReactiveElement(kind, updaterFunction, dependencies) {
-    let element = interactive[kind](0, 0, 0, 0, 0, 0);
-    element.addDependency(...dependencies);
-    element.update = updaterFunction;
-    element.update();
-    return element;
-}
-
-makeVector(100, 200, {name: 'P', coordinates: true})
-
-console.log(interactive);
-*/

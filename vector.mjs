@@ -5,14 +5,15 @@ export default class Vector extends EventTarget {
   static defaultOptions = {
     resizable: true,
     label: true,
-    labelPosition: (p1, p2) => ({x: p2.x + 4, y: p2.y + 4}),
-    labelContent: (p1, p2) => `(${p2.x}, ${p2.y})`
+    labelPosition: ({p1, p2}) => ({x: p2.x + 4, y: p2.y + 4}),
+    labelContent: (vector) => `${vector.name} ${vector.coordinatesTuple()}`,
   };
 
-  constructor(p1, p2, grid, options) {
+  constructor(name, p1, p2, grid, options) {
     super();
 
-    this.grid = grid; // ...Every vector is located on a grid (instance of Grid)
+    this.name = this.stylizedName(name); // Every vector has a name...
+    this.grid = grid; // ...and is located on a grid (instance of Grid)
 
     options = {...Vector.defaultOptions, ...options};
 
@@ -25,17 +26,17 @@ export default class Vector extends EventTarget {
     if(typeof p2 === "function") {
       initialP2 = p2.call();
     }
-    this.makeLine(initialP1, initialP2, options.styles);
+    this.#makeLine(initialP1, initialP2, options.styles);
 
     if (options.resizable) {
       makeResizable(this.line, p2, {x: 'x2', y: 'y2'});
     }
 
     if (options.label) {
-      this.makeLabel(initialP1, initialP2, options);
+      this.#makeLabel(initialP1, initialP2, options);
     }
 
-    if(options.anchorTo) {
+    if (options.anchorTo) {
       let dependencies = options.anchorTo;
 
       this.line.anchorTo(dependencies, () => {
@@ -50,35 +51,6 @@ export default class Vector extends EventTarget {
     }
   }
 
-  makeLine(p1, p2, styles) {
-    let arrowHead = this.artist.arrowHead(`vector-arrowhead-${randomInt()}`, {fill: styles.stroke});
-
-    let lineAttributes = {
-      x1: p1.x,
-      y1: p1.y,
-      x2: p2.x,
-      y2: p2.y,
-      'marker-end': `url(#${arrowHead.getAttribute('id')})`,
-    }
-    this.line = this.artist.line(lineAttributes, styles);
-    // Bubble up events
-    this.bubbleUpUpdates(this.line)
-
-  }
-
-  makeLabel(p1, p2, options) {
-    let labelAttributes = options.labelPosition.call(null, p1, p2);
-    this.label = this.artist.text(options.labelContent.call(null, p1, p2), labelAttributes);
-
-    this.label.anchorTo(this.line, () => {
-      let newP1 = this.p1;
-      let newP2 = this.p2;
-
-      this.label.setPosition(options.labelPosition.call(null, newP1, newP2));
-      this.label.setContent(options.labelContent.call(null, newP1, newP2));
-    });
-  }
-
   get p1() {
     return {
       x: this.line.get('x1'), y: this.line.get('y1')
@@ -91,15 +63,64 @@ export default class Vector extends EventTarget {
     }
   }
 
+  get length() {
+    return Math.sqrt(((this.p2.x - this.p1.x) ** 2) + ((this.p2.y - this.p1.y) ** 2));
+  }
+
+  coordinatesTuple() {
+    return `(${this.p2.x}, ${this.p2.y})`
+  }
+
+  stylizedName(name) {
+    if (name.length === 1) {
+      let codePoint = name.codePointAt(0);
+      // Convert A-Z to the corresponding italic Unicode math character
+      if (codePoint >= 97 && codePoint <= 122) {
+        return String.fromCodePoint(codePoint + 119789);
+      }
+      if (codePoint >= 65 && codePoint <= 90) {
+        return String.fromCodePoint(codePoint + 119795);
+      }
+    }
+
+    return name;
+  }
+
   anchorTo(...args) {
     this.line.anchorTo(...args)
   }
 
-  bubbleUpUpdates(element) {
+  #bubbleUpUpdates(element) {
     element.addEventListener('updated', (event) => this.dispatchEvent(
       new CustomEvent("updated", {
         detail: event.detail
       }))
     );
+  }
+
+  #makeLine(p1, p2, styles) {
+    let arrowHead = this.artist.arrowHead(`vector-arrowhead-${randomInt()}`, {fill: styles.stroke});
+
+    let lineAttributes = {
+      x1: p1.x,
+      y1: p1.y,
+      x2: p2.x,
+      y2: p2.y,
+      'marker-end': `url(#${arrowHead.getAttribute('id')})`,
+    }
+    this.line = this.artist.line(lineAttributes, styles);
+    // Bubble up events
+    this.#bubbleUpUpdates(this.line)
+
+  }
+
+  #makeLabel(p1, p2, options) {
+    let labelAttributes = options.labelPosition.call(null, this);
+    this.label = this.artist.text(options.labelContent.call(null, this), labelAttributes);
+
+    this.label.anchorTo(this.line, () => {
+      this.label.setPosition(options.labelPosition.call(null, this));
+      this.label.setContent(options.labelContent.call(null, this));
+    });
   }
 }
