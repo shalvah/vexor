@@ -1,4 +1,5 @@
 import Grid from "./grid.mjs";
+import Vector from "./vector.mjs";
 
 let grid1 = new Grid(`container1`, {
   maxX: 300, maxY: 300,
@@ -31,15 +32,7 @@ let vecB1 = grid1.vector('b', {p1: {x: 0, y: 0}, p2: {x: 150, y: 150} });
 let vecAMinusB = grid1.vectorDifference(vecA1, vecB1,
   {
     styles: {stroke: `blue`},
-    labelPosition: ({p1, p2}) => {
-      let midPoint = {
-        x: p1.x + (p2.x - p1.x) / 2,
-        y: p1.y + (p2.y - p1.y) / 2,
-      };
-      return {
-        x: midPoint.x + 4, y: midPoint.y + 4,
-      }
-    },
+    labelPosition: Vector.LABEL_POSITIONS.midPoint,
     labelContent: (vector) => {
       return `|${vector.name}| ≈ ${Math.round(vector.length)}`;
     }
@@ -66,15 +59,7 @@ let vecB2 = grid2.vector('b', {p1: {x: 0, y: 0}, p2: {x: 150, y: 150} });
 let vecAPlusB = grid2.vectorSum(vecA2, vecB2,
   {
     styles: {stroke: `green`},
-    labelPosition: ({p1, p2}) => {
-      let midPoint = {
-        x: p1.x + (p2.x - p1.x) / 2,
-        y: p1.y + (p2.y - p1.y) / 2,
-      };
-      return {
-        x: midPoint.x + 4, y: midPoint.y + 4,
-      }
-    },
+    labelPosition: Vector.LABEL_POSITIONS.midPoint,
     labelContent: (vector) => {
       return `|${vector.name}| ≈ ${Math.round(vector.length)}`;
     }

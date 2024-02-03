@@ -1,11 +1,24 @@
 import {randomInt} from "./utils.mjs";
 import {makeResizable} from "./make_resizable.mjs";
 
+const LABEL_POSITIONS = {
+  tip: ({p1, p2}) => ({x: p2.x + 4, y: p2.y + 4}),
+  midPoint: ({p1, p2}) => {
+    let midPoint = {
+      x: p1.x + (p2.x - p1.x) / 2,
+      y: p1.y + (p2.y - p1.y) / 2,
+    };
+    return {
+      x: midPoint.x + 4, y: midPoint.y + 4,
+    }
+  },
+};
+
 export default class Vector extends EventTarget {
   static defaultOptions = {
     resizable: true,
     label: true,
-    labelPosition: ({p1, p2}) => ({x: p2.x + 4, y: p2.y + 4}),
+    labelPosition: LABEL_POSITIONS.tip,
     labelContent: (vector) => `${vector.name} ${vector.coordinatesTuple()}`,
   };
 
@@ -140,3 +153,5 @@ export default class Vector extends EventTarget {
     });
   }
 }
+
+Vector.LABEL_POSITIONS = LABEL_POSITIONS;
