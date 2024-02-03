@@ -8,7 +8,6 @@ let grid1 = new Grid(`container1`, {
     line: {
       strokeWidth: `2px`,
       stroke: `red`,
-      fill: 'none'
     }
   }
 });
@@ -33,9 +32,7 @@ let vecAMinusB = grid1.vectorDifference(vecA1, vecB1,
   {
     styles: {stroke: `blue`},
     labelPosition: Vector.LABEL_POSITIONS.midPoint,
-    labelContent: (vector) => {
-      return `|${vector.name}| ≈ ${Math.round(vector.length)}`;
-    }
+    labelContent: vector => `|${vector.name}| ≈ ${Math.round(vector.length)}`
   }
 );
 
@@ -47,7 +44,6 @@ let grid2 = new Grid(`container2`, {
     line: {
       strokeWidth: `2px`,
       stroke: `red`,
-      fill: 'none'
     }
   }
 });
@@ -60,9 +56,7 @@ let vecAPlusB = grid2.vectorSum(vecA2, vecB2,
   {
     styles: {stroke: `green`},
     labelPosition: Vector.LABEL_POSITIONS.midPoint,
-    labelContent: (vector) => {
-      return `|${vector.name}| ≈ ${Math.round(vector.length)}`;
-    }
+    labelContent: vector => `|${vector.name}| ≈ ${Math.round(vector.length)}`
   }
 );
 
