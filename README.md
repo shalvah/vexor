@@ -10,7 +10,45 @@ Current abilities:
 - Easily add sum and difference vectors
 - "Mirror" vectors across grids
 
-See demo
+See demo. Example usage:
+
+```js
+let grid = new Grid(`container`, {
+  maxX: 300, maxY: 300,
+  minX: 0, minY: 0,
+  defaultStyles: {
+    line: {
+      strokeWidth: `2px`,
+      stroke: `red`,
+    }
+  }
+});
+
+let vecA = grid.vector('a', {
+  p1: {x: 0, y: 0}, 
+  p2: {x: 20, y: 100} 
+});
+
+let vecB = grid.vector('b', {
+  p1: {x: 0, y: 0}, 
+  p2: {x: 150, y: 150} }
+);
+
+let vecAMinusB = grid.vectorDifference(vecA, vecB,
+  {
+    styles: {stroke: `blue`},
+    labelPosition: Vector.LABEL_POSITIONS.midPoint,
+    labelContent: vector => `|${vector.name}| ≈ ${Math.round(vector.length)}`
+  }
+);
+let vecAPlusB = grid.vectorSum(vecA, vecB,
+  {
+    styles: {stroke: `green`},
+    labelPosition: Vector.LABEL_POSITIONS.midPoint,
+    labelContent: vector => `|${vector.name}| ≈ ${Math.round(vector.length)}`
+  }
+);
+```
 
 Motivation: 
 - Demonstrating vectors for articles (eg https://blog.shalvah.me/posts/learn-svg-by-drawing-an-arrow)
