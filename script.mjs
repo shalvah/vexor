@@ -24,9 +24,9 @@ let grid1 = new Grid(`container1`, {
 //   {strokeWidth: `2px`, stroke: `blue`, fill: 'none'}
 // )
 
-let vecA1 = grid1.vector('a', {x: 0, y: 0}, {x: 20, y: 100});
+let vecA1 = grid1.vector('a', {p1: {x: 0, y: 0}, p2: {x: 20, y: 100} });
 
-let vecB1 = grid1.vector('b', {x: 0, y: 0}, {x: 150, y: 150});
+let vecB1 = grid1.vector('b', {p1: {x: 0, y: 0}, p2: {x: 150, y: 150} });
 
 let vecAMinusB = grid1.vectorDifference(vecA1, vecB1,
   {
@@ -46,6 +46,7 @@ let vecAMinusB = grid1.vectorDifference(vecA1, vecB1,
   }
 );
 
+// TODO introduce .cloneTo(otherElement) ?
 let grid2 = new Grid(`container2`, {
   maxX: 300, maxY: 300,
   minX: 0, minY: 0,
@@ -58,9 +59,9 @@ let grid2 = new Grid(`container2`, {
   }
 });
 
-let vecA2 = grid2.vector('a', {x: 0, y: 0}, {x: 20, y: 100});
+let vecA2 = grid2.vector('a', {p1: {x: 0, y: 0}, p2: {x: 20, y: 100} });
 
-let vecB2 = grid2.vector('b', {x: 0, y: 0}, {x: 150, y: 150});
+let vecB2 = grid2.vector('b', {p1: {x: 0, y: 0}, p2: {x: 150, y: 150} });
 
 let vecAPlusB = grid2.vectorSum(vecA2, vecB2,
   {
@@ -80,3 +81,5 @@ let vecAPlusB = grid2.vectorSum(vecA2, vecB2,
   }
 );
 
+vecA1.mirror(vecA2);
+vecB1.mirror(vecB2);

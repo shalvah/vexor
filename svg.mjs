@@ -1,4 +1,4 @@
-import {setStyles, setAttributes} from "./utils.mjs"
+import {setStyles, setAttributes, getAndSetAttributes} from "./utils.mjs"
 import {makeResizable} from "./make_resizable.mjs";
 
 export default class Svg extends EventTarget {
@@ -37,12 +37,17 @@ export default class Svg extends EventTarget {
     return new Svg(elementType, this, attributes, styles);
   }
 
-  // Update this element's attributes and emit an "updated" event
+  // Update this element's attributes and emit an "updated" event if they changed
   updateAndNotify(attributes) {
-    setAttributes(this, attributes);
-    this.dispatchEvent(new CustomEvent("updated", {
-      detail: attributes
-    }));
+    let oldAttributes = getAndSetAttributes(this, attributes);
+    let changed = Object.entries(oldAttributes)
+      .find(([k, v]) => v.toString() !== attributes[k].toString());
+
+    if (changed) {
+      this.dispatchEvent(new CustomEvent("updated", {
+        detail: attributes
+      }));
+    }
   }
 
   // Call an update function when when any of these other elements emit an "updated" event

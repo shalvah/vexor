@@ -46,17 +46,16 @@ class Grid extends Svg {
     this.defaultStyles = defaultStyles;
   }
 
-  vector(name, p1, p2, options = {}) {
+  vector(name, position, options = {}) {
     options.styles = {...this.defaultStyles.line, ...options.styles};
-    return new Vector(name, p1, p2, this, options);
+    return new Vector(name, position, this, options);
   }
 
   vectorDifference(a, b, options) {
     options.styles = {"stroke-dasharray": "4", ...(options.styles || {})};
     return this.vector(
       `${a.name} - ${b.name}`,
-      () => a.p2,
-      () => b.p2,
+      () => ({p1: a.p2, p2: b.p2}),
       {...options, resizable: false, anchorTo: [a, b]}
     );
   }
@@ -65,9 +64,8 @@ class Grid extends Svg {
     options.styles = {"stroke-dasharray": "4", ...(options.styles || {})};
     return this.vector(
       `${a.name} + ${b.name}`,
-      () => a.p1,
-      () => ({x: (a.p2.x + b.p2.x), y: (a.p2.y + b.p2.y)}),
-      {...options, resizable: false, anchorTo: [a, b]}
+      () => ({ p1: a.p1, p2: {x: (a.p2.x + b.p2.x), y: (a.p2.y + b.p2.y)} }),
+      {resizable: false, anchorTo: [a, b], ...options}
     );
   }
 

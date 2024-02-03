@@ -8,7 +8,7 @@ export let makeResizable = (svg, draggablePoint, attributesMap) => {
       [attributesMap.x]: pointSvg.get('cx'), [attributesMap.y]: pointSvg.get('cy'),
     });
   });
-  return svg;
+  return pointSvg;
 }
 
 function makePointDraggable({x, y}, svg) {

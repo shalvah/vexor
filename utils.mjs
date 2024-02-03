@@ -12,4 +12,13 @@ export let setAttributes = ($element, attributes = {}) => {
   return $element;
 }
 
+export let getAndSetAttributes = ($element, attributes = {}) => {
+  let oldAttributes = {};
+  Object.entries(attributes).forEach(([k, v]) => {
+    oldAttributes[k] = $element.getAttribute(k);
+    $element.setAttribute(k, v);
+  });
+  return oldAttributes;
+}
+
 export let randomInt = () => Math.floor(Math.random() * 1000);

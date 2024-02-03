@@ -1,4 +1,4 @@
-import {randomInt, setAttributes} from "./utils.mjs";
+import {randomInt} from "./utils.mjs";
 import {makeResizable} from "./make_resizable.mjs";
 
 export default class Vector extends EventTarget {
@@ -9,7 +9,7 @@ export default class Vector extends EventTarget {
     labelContent: (vector) => `${vector.name} ${vector.coordinatesTuple()}`,
   };
 
-  constructor(name, p1, p2, grid, options) {
+  constructor(name, position, grid, options) {
     super();
 
     this.name = this.stylizedName(name); // Every vector has a name...
@@ -19,35 +19,24 @@ export default class Vector extends EventTarget {
 
     this.artist = grid.grouped(); // The "artist" is the current painter (Svg)
 
-    let [initialP1, initialP2] = [p1, p2];
-    if(typeof p1 === "function") {
-      initialP1 = p1.call();
+    let initialPosition = position;
+    if (typeof position == "function") {
+      this.positionComputer = position;
+      initialPosition = position.call();
     }
-    if(typeof p2 === "function") {
-      initialP2 = p2.call();
-    }
-    this.#makeLine(initialP1, initialP2, options.styles);
+    this.#makeLine(initialPosition.p1, initialPosition.p2, options.styles);
 
     if (options.resizable) {
-      makeResizable(this.line, p2, {x: 'x2', y: 'y2'});
+      // TODO This (and its usages) assume dragging at the tip only
+      this.dragHandle = makeResizable(this.line, initialPosition.p2, {x: 'x2', y: 'y2'});
     }
 
     if (options.label) {
-      this.#makeLabel(initialP1, initialP2, options);
+      this.#makeLabel(initialPosition.p1, initialPosition.p2, options);
     }
 
     if (options.anchorTo) {
-      let dependencies = options.anchorTo;
-
-      this.line.anchorTo(dependencies, () => {
-        let [newP1, newP2] = [p1.call(), p2.call()];
-        this.line.updateAndNotify({
-          x1: newP1.x,
-          y1: newP1.y,
-          x2: newP2.x,
-          y2: newP2.y,
-        });
-      });
+      this.addAnchors(options.anchorTo);
     }
   }
 
@@ -84,6 +73,33 @@ export default class Vector extends EventTarget {
     }
 
     return name;
+  }
+
+  addAnchors(dependencies) {
+    this.line.anchorTo(dependencies, () => {
+      let {p1, p2} = this.positionComputer.call();
+      this.line.updateAndNotify({
+        x1: p1.x,
+        y1: p1.y,
+        x2: p2.x,
+        y2: p2.y,
+      });
+    });
+  }
+
+  mirror(otherVector) {
+    this.anchorTo(otherVector, () => {
+      this.dragHandle.updateAndNotify({
+        cx: otherVector.p2.x,
+        cy: otherVector.p2.y,
+      });
+    });
+    otherVector.anchorTo(this, () => {
+      otherVector.dragHandle.updateAndNotify({
+        cx: this.p2.x,
+        cy: this.p2.y,
+      });
+    });
   }
 
   anchorTo(...args) {
