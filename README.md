@@ -19,4 +19,4 @@ Motivation:
 Inspirations:
 - https://vectorjs.org/
 - https://www.petercollingridge.co.uk/tools/interactivesvgjs/
-- https://github.com/ksassnowski/vueclid (which I'll probably switch to using)
+- https://github.com/ksassnowski/vueclid (to which I'll probably switch)
