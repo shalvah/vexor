@@ -36,6 +36,10 @@ export default class Vector extends EventTarget {
     if (typeof position == "function") {
       this.positionComputer = position;
       initialPosition = position.call();
+    } else {
+      if (initialPosition.p1 === undefined) {
+        initialPosition.p1 = {x: 0, y: 0}
+      }
     }
     this.#makeLine(initialPosition.p1, initialPosition.p2, options.styles);
 
