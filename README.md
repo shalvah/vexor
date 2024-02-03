@@ -1,4 +1,4 @@
-Rough version of library I made for visualizing 2D vectors (linear algebra), inspired by [Vector.js](https://vectorjs.org).
+Rough library for visualizing 2D vectors (linear algebra), inspired by [Vector.js](https://vectorjs.org).
 
 
 Goal: simple diagrams of interactive 2D vectors on a Cartesian grid
@@ -15,8 +15,8 @@ See [demo](http://shalvah.me/vex). Example usage:
 
 ```js
 let grid = new Grid(`container`, {
-  maxX: 300, maxY: 300,
-  minX: 0, minY: 0,
+  maxX: 200, maxY: 200,
+  minX: -200, minY: -200,
   defaultStyles: {
     line: {
       strokeWidth: `2px`,
