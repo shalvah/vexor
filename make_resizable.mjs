@@ -20,9 +20,11 @@ function makePointDraggable({x, y}, svg) {
 function createDragHandleAtPoint({x, y}, svg) {
   let strokeColour = getComputedStyle(svg.$element).getPropertyValue('stroke');
   let pointSvg = svg.parentSvg.circle(
-    {cx: x, cy: y, r: 12},
+    {cx: x, cy: y, r: 10},
     {cursor: 'pointer', stroke: strokeColour, strokeWidth: '0.5px', fill: 'transparent'}
   );
+  // Disable browser touch events so that dragging works on touch screens
+  svg.rootSvg.$element.style['touch-action'] = 'pinch-zoom';
   // TODO adding arbitrary properties not the best
   pointSvg.isDragging = false;
   return pointSvg;
