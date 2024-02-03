@@ -3,12 +3,10 @@ import {makeResizable} from "./make_resizable.mjs";
 
 export default class Svg extends EventTarget {
   static NAMESPACE_URI = 'http://www.w3.org/2000/svg';
+  static classesForElementTypes = {};
 
-  constructor(elementType, parentDomElementOrId, attributes = {}, styles = {}, {parentSvg, rootSvg} = {}) {
+  constructor(elementType, parentSvgOrId, attributes = {}, styles = {}) {
     super();
-
-    this.parentSvg = parentSvg;
-    this.rootSvg = rootSvg;
 
     if (elementType === 'svg') {
       attributes = {
@@ -22,31 +20,35 @@ export default class Svg extends EventTarget {
     setAttributes(this.$element, attributes);
     setStyles(this.$element, styles);
 
-    let parentDomElement = (typeof parentDomElementOrId == 'string') ?
-      document.querySelector(`#${parentDomElementOrId}`) : parentDomElementOrId;
+    let parentDomElement = (typeof parentSvgOrId == 'string') ?
+      document.querySelector(`#${parentSvgOrId}`) : parentSvgOrId.$element;
 
     parentDomElement.appendChild(this.$element);
+
+    this.parentSvg = (typeof parentSvgOrId == 'string') ? null : parentSvgOrId;
+    this.rootSvg = this.parentSvg?.rootSvg || this;
+  }
+
+  static setElementClassWrapper(elementType, klass) {
+    Svg.classesForElementTypes[elementType] = klass;
   }
 
   add(elementType, attributes = {}, styles = {}) {
-    return new Svg(elementType, this.$element, attributes, styles, {
-      parentSvg: this,
-      rootSvg: this.rootSvg || this
-    });
+    return new Svg(elementType, this, attributes, styles);
   }
 
-  // Update this element's attributes and emit an attributes_changed event
+  // Update this element's attributes and emit an "updated" event
   updateAndNotify(attributes) {
     setAttributes(this, attributes);
-    this.dispatchEvent(new CustomEvent("attributes_changed", {
+    this.dispatchEvent(new CustomEvent("updated", {
       detail: attributes
     }));
   }
 
-  // Call an update function when when any of these other elements emit an attributes_changed event
+  // Call an update function when when any of these other elements emit an "updated" event
   anchorTo(svgElements, updateFn) {
     [svgElements].flat().forEach(el => {
-      el.addEventListener('attributes_changed', updateFn);
+      el.addEventListener('updated', updateFn);
     });
   }
 
@@ -72,12 +74,6 @@ export default class Svg extends EventTarget {
     return this.add(`circle`, attributes, styles);
   }
 
-  text(content, attributes, styles = {}) {
-    const text = this.add(`text`, attributes, styles);
-    text.$element.innerHTML = content;
-    return text;
-  }
-
   foreignObject(content, attributes = {}, styles = {}) {
     const foreignObject = this.add(`foreignObject`, attributes, styles);
     foreignObject.$element.innerHTML = content;
@@ -90,6 +86,22 @@ export default class Svg extends EventTarget {
 
   path(attributes, styles = {}) {
     return this.add(`path`, attributes, styles);
+  }
+
+  arrowHead(id, styles = {}) {
+    let arrowHead = this.marker({
+      fill: styles.fill,
+      markerWidth: 6,
+      markerHeight: 6,
+      id,
+      orient: 'auto-start-reverse',
+      // 0,0 of the arrowhead is the end of the axis, so we must "translate" it
+      refX: 5, refY: 2
+    });
+
+    // 0,4 - 4 determines the width of the arrow's base
+    arrowHead.path({d: 'M 0,0 L 6,2 L 0,4 Z'});
+    return arrowHead;
   }
 
   grouped(styles = {}) {

@@ -1,12 +1,15 @@
 import Svg from "./svg.mjs";
-import {makeResizable} from "./make_resizable.mjs";
-import {setAttributes} from "./utils.mjs";
+import {randomInt, setAttributes} from "./utils.mjs";
+import Vector from "./vector.mjs";
+import Text from "./svgs/text.mjs";
 
 class Grid extends Svg {
   static AXIS_MARGIN = 32; // Gap between axes and screen edges (useful to insert number labels and axes labels)
   static GAP_FROM_AXIS_LABEL_BOTTOM_TO_AXIS = 8; // Gap between number labels and x-axis
   static GAP_FROM_AXIS_LABEL_TOP_TO_AXIS = 20; // Gap between number labels and x-axis
   static GAP_FROM_AXIS_LABEL_END_TO_AXIS = 5; // Gap between number labels and y-axis
+
+  #axisArrowHead;
 
   constructor(domElementId, {maxX, maxY, minX, minY, defaultStyles}, options = {}) {
     minX = minX ?? -maxX;
@@ -35,7 +38,7 @@ class Grid extends Svg {
     this.minX = minX;
     this.minY = minY;
 
-    this.gridId = this.randomInt();
+    this.gridId = randomInt();
 
     this.setUpAxes();
     this.drawGridLines();
@@ -44,55 +47,21 @@ class Grid extends Svg {
   }
 
   vector(p1, p2, options = {}) {
-    options = Object.assign({styles: {}, resizable: true, label: null}, options);
-    let styles = {...(this.defaultStyles.line || {}), ...options.styles};
-
-    const arrowHead = this.makeArrowHead(`vector-arrowhead-${this.randomInt()}`, {fill: styles.stroke});
-    let attributes = {
-      x1: p1.x,
-      y1: p1.y,
-      x2: p2.x,
-      y2: p2.y,
-      'marker-end': `url(#${arrowHead.getAttribute('id')})`,
-    }
-    let line = this.line(attributes, styles);
-    // TODO adding arbitrary properties not the best
-    line.p1 = p1;
-    line.p2 = p2;
-    if (options.resizable) {
-      makeResizable(line, p2, {x: 'x2', y: 'y2'});
-    }
-    if (options.labelPos) {
-      let labelAttributes = options.labelPos.call(null, line);
-      let label = this.text(options.labelFn.call(null, p1, p2), labelAttributes);
-      label.anchorTo(line, () => {
-        let newP1 = { x: line.get('x1'), y: line.get('y1') };
-        let newP2 = { x: line.get('x2'), y: line.get('y2') };
-        setAttributes(label.$element, options.labelPos.call(null, line));
-        label.$element.innerHTML = options.labelFn.call(null, newP1, newP2);
-      });
-    }
-
-    return line;
+    options.styles = {...this.defaultStyles.line, ...options.styles};
+    return new Vector(p1, p2, this, options);
   }
 
   differenceVector(a, b, options) {
     options.styles = {"stroke-dasharray": "4", ...(options.styles || {})};
-    let line = this.vector(a.p2, b.p2, {...options, resizable: false});
-    line.anchorTo([a, b], () => {
-      // TODO better to update the wrapping class, rather than the DOM element directly
-      line.updateAndNotify({
-        x1: a.get(`x2`),
-        y1: a.get(`y2`),
-        x2: b.get(`x2`),
-        y2: b.get(`y2`),
-      });
-    });
-    return line;
+    return this.vector(
+      () => a.p2,
+      () => b.p2,
+      {...options, resizable: false, anchorTo: [a, b]}
+    );
   }
 
   setUpAxes() {
-    this.arrowHead = this.makeArrowHead(`axis-arrowhead-grid-${this.gridId}`);
+    this.#axisArrowHead = this.arrowHead(`axis-arrowhead-grid-${this.gridId}`);
     this.xAxis = this.#axis(
       {
         x1: this.minX - Grid.AXIS_MARGIN,
@@ -185,10 +154,10 @@ class Grid extends Svg {
       strokeWidth: '2px',
     }
     if (this.hasNegativeQuadrant()) {
-      attributes[`marker-start`] = `url(#${this.arrowHead.getAttribute('id')})`;
+      attributes[`marker-start`] = `url(#${this.#axisArrowHead.getAttribute('id')})`;
     }
     if (this.hasPositiveQuadrant()) {
-      attributes[`marker-end`] = `url(#${this.arrowHead.getAttribute('id')})`;
+      attributes[`marker-end`] = `url(#${this.#axisArrowHead.getAttribute('id')})`;
     }
     return this.line(attributes, styles);
   }
@@ -199,26 +168,6 @@ class Grid extends Svg {
 
   hasNegativeQuadrant() {
     return this.minX < 0 || this.minY < 0;
-  }
-
-  makeArrowHead(id, styles = {}) {
-    let arrowHead = this.marker({
-      fill: styles.fill,
-      markerWidth: 6,
-      markerHeight: 6,
-      id,
-      orient: 'auto-start-reverse',
-      // 0,0 of the arrowhead is the end of the axis, so we must "translate" it
-      refX: 5, refY: 2
-    });
-
-    // 0,4 - 4 determines the width of the arrow's base
-    arrowHead.path({d: 'M 0,0 L 6,2 L 0,4 Z'});
-    return arrowHead;
-  }
-
-  randomInt() {
-    return Math.floor(Math.random() * 1000);
   }
 }
 

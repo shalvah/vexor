@@ -11,3 +11,5 @@ export let setAttributes = ($element, attributes = {}) => {
   });
   return $element;
 }
+
+export let randomInt = () => Math.floor(Math.random() * 1000);
