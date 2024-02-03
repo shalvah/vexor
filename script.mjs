@@ -83,3 +83,12 @@ let vecAPlusB = grid2.vectorSum(vecA2, vecB2,
 
 vecA1.mirror(vecA2);
 vecB1.mirror(vecB2);
+
+// My ideal API (vector-based, not grid/DOM-based):
+// let vecA = new Vector(...);
+// let vecB = new Vector(...);
+//
+// let grid1 = new Grid(`grid1`);
+// let grid2 = new Grid(`grid2`);
+// grid1.add(vecA, vecB, vecA.minus(vecB));
+// grid2.add(vecA, vecB, vecA.plus(vecB));
