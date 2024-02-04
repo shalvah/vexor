@@ -1,0 +1,27 @@
+{
+  "name": "@shalvah/vexor",
+  "version": "0.1.0",
+  "description": "Graph resizable 2D vectors and basic operations",
+  "main": "lib/index.mjs",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shalvah/vexor.git"
+  },
+  "keywords": [
+    "vectors",
+    "2d",
+    "graph",
+    "Cartesian",
+    "linear algebra"
+  ],
+  "author": "Shalvah <hello@shalvah.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shalvah/vexor/issues"
+  },
+  "homepage": "https://github.com/shalvah/vexor#readme"
+}
