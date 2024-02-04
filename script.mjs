@@ -1,5 +1,4 @@
-import Grid from "./Grid.mjs";
-import Vector from "./Vector.mjs";
+import { Grid, Vector } from "./lib/index.mjs";
 
 let grid1 = new Grid(`container1`, {
   maxX: 200, maxY: 200,
