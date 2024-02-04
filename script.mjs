@@ -23,9 +23,9 @@ let grid1 = new Grid(`container1`, {
 //   {strokeWidth: `2px`, stroke: `blue`, fill: 'none'}
 // )
 
-let vecA1 = grid1.vector('a', {from: {x: 0, y: 0}, to: {x: 20, y: 100} });
+let vecA1 = grid1.vector('a', { to: {x: 20, y: 100} });
 
-let vecB1 = grid1.vector('b', {from: {x: 0, y: 0}, to: {x: 150, y: 150} });
+let vecB1 = grid1.vector('b', { to: {x: 150, y: 150} });
 
 let vecAMinusB = grid1.vectorDifference(vecA1, vecB1,
   {
@@ -47,9 +47,9 @@ let grid2 = new Grid(`container2`, {
   }
 });
 
-let vecA2 = grid2.vector('a', {from: {x: 0, y: 0}, to: {x: 20, y: 100} });
+let vecA2 = grid2.vector('a', { to: {x: 20, y: 100} });
 
-let vecB2 = grid2.vector('b', {from: {x: 0, y: 0}, to: {x: 150, y: 150} });
+let vecB2 = grid2.vector('b', { to: {x: 150, y: 150} });
 
 let vecAPlusB = grid2.vectorSum(vecA2, vecB2,
   {
