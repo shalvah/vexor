@@ -23,15 +23,9 @@ let grid = new Grid(`container`, {
   }
 });
 
-let vecA = grid.vector('a', {
-  p1: {x: 0, y: 0}, 
-  p2: {x: 20, y: 100} 
-});
+let vecA = grid.vector('a', { to: {x: 20, y: 100} });
 
-let vecB = grid.vector('b', {
-  p1: {x: 0, y: 0}, 
-  p2: {x: 150, y: 150} }
-);
+let vecB = grid.vector('b', { to: {x: 150, y: 150} });
 
 let vecAMinusB = grid.vectorDifference(vecA, vecB,
   {
