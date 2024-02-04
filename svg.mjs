@@ -61,6 +61,10 @@ export default class Svg extends EventTarget {
     return this.add(`line`, attributes, styles);
   }
 
+  polyline(attributes, styles = {}) {
+    return this.add(`polyline`, attributes, styles);
+  }
+
   draggableLine(attributes, styles = {}) {
     let group = this.grouped(styles);
     // First, draw the line
