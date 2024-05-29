@@ -1,6 +1,6 @@
 {
   "name": "@shalvah/vexor",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Graph resizable 2D vectors and basic operations",
   "main": "lib/index.mjs",
   "directories": {
