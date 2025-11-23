@@ -1,4 +1,5 @@
-Rough library for visualizing 2D vectors (linear algebra), inspired by [Vector.js](https://vectorjs.org).
+# Vexor
+Small library for visualizing 2D vectors (linear algebra), inspired by [Vector.js](https://vectorjs.org).
 
 Goal: simple diagrams of interactive 2D vectors on a Cartesian grid
 
