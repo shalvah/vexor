@@ -1,6 +1,8 @@
 # Vexor
 Small library for visualizing 2D vectors (linear algebra), inspired by [Vector.js](https://vectorjs.org).
 
+See [demo](http://shalvah.me/vexor). 
+
 Goal: simple diagrams of interactive 2D vectors on a Cartesian grid
 
 Current abilities:
@@ -10,7 +12,7 @@ Current abilities:
 - Easily add sum and difference vectors (which also auto-update)
 - "Mirror" vectors across grids
 
-See [demo](http://shalvah.me/vex). Example usage:
+Example usage:
 
 ```js
 let grid = new Grid(`container`, {
